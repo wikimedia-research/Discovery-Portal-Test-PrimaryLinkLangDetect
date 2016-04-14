@@ -62,8 +62,9 @@ rm(accept_language)
 sessions %<>% keep_where(!is.na(`Primary language`)) %>% tbl_df
 sessions %<>% mutate(group = ifelse(group == "language-detection-a", "A (Control)", "B (Test)"))
 
-sessions$affectable <- sessions$`Primary language` != "English" # & where their order doesn't match our default order
+# sessions$affectable <- sessions$`Primary language` != "English" # & where their order doesn't match our default order
 readr::write_rds(sessions, "portal-lang-detect-test.rds", "gz")
 
 ## Locally:
-# scp stat2:/home/bearloga/portal-lang-detect-test.rds /Users/mpopov/Documents/Projects/Discovery\ Tests/Language\ Detection\ Link\ Reorder/data/
+dir.create("data")
+system("scp stat2:/home/bearloga/portal-lang-detect-test.rds data/")
