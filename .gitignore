@@ -21,3 +21,7 @@ vignettes/*.pdf
 
 # Data
 data/
+
+*.html
+
+*.pdf
