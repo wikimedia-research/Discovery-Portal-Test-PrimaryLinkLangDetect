@@ -137,7 +137,7 @@ ctr_overall %>%
   arrange(`Includes English`, link, group) %>%
   mutate(ctr = 100 * ctr) %>%
   rename(`Clickthrough Rate (%)` = ctr) %>%
-  knitr::kable(digits = 2)
+  knitr::kable(digits = 2, format = "latex", caption = "Clickthrough rate by language, link, and group.")
 # foo <- function(x) {
 #   2 * as.numeric(factor(x)) - 3
 # }

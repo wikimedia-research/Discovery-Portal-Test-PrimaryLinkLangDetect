@@ -52,6 +52,7 @@ ctr_overall %>%
   knitr::kable(digits = 4)
 
 foo <- function(data) { # data <- sessions
+  
   language_clicks <- data %>%
     filter(section %in% c("primary links", "secondary links")) %>%
     mutate(`Visited Wikipedia` = sub("https://(.*)\\.wikipedia\\.org/?", "\\1", destination),
@@ -84,6 +85,20 @@ foo <- function(data) { # data <- sessions
     mutate(includes_english = "Combined (Not split by Eng.)")
   visit_aggregates <- dplyr::bind_rows(visit_aggregates_split, visit_aggregates_combined)
   
+  results <- as.list(character(12))
+  
+  format_confint <- function(est, ci, digits = 2, units = "", rescale = TRUE) {
+    if (units == "%") {
+      units <- paste0(units, units)
+      est <- 100 * est; ci <- 100 * ci
+    }
+    type <- switch(typeof(est), "character" = "s", "double" = "f", "integer" = "i")
+    x <- sprintf(paste0("%", ifelse(type == "character", "s", paste0(".", digits, type)), units), est)
+    y <- sprintf(paste0("%", ifelse(type == "character", "s", paste0(".", digits, type)), units), ci[1])
+    z <- sprintf(paste0("%", ifelse(type == "character", "s", paste0(".", digits, type)), units), ci[2])
+    return(paste0(x, " (", y, ", ", z, ")"))
+  }
+  
   set.seed(0)
   cat("Primary Links, Accept-Language doesn't include English\n")
   p1 <- visit_aggregates %>%
@@ -94,7 +109,13 @@ foo <- function(data) { # data <- sessions
     flip_rows %T>%
     { cat(knitr::kable(prop.table(., margin = 1), digits = 3), fill = TRUE) } %>%
     beta_binom %T>%
-    { cat(knitr::kable(summary(., interval_type = "HPD"), digits = 3), fill = TRUE) } %>%
+    {
+      summary_tbl <- summary(., interval_type = "HPD")
+      results[[1]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
+    } %>%
     plot(interval_type = "HPD") +
     ggtitle("Probability of visiting Wikipedia in one of their preferred languages",
             subtitle = "Primary Links, Accept-Language doesn't include English") +
@@ -111,7 +132,13 @@ foo <- function(data) { # data <- sessions
     flip_rows %T>%
     { cat(knitr::kable(prop.table(., margin = 1), digits = 3), fill = TRUE) } %>%
     beta_binom %T>%
-    { cat(knitr::kable(summary(., interval_type = "HPD"), digits = 3), fill = TRUE) } %>%
+    {
+      summary_tbl <- summary(., interval_type = "HPD")
+      results[[2]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
+    } %>%
     plot(interval_type = "HPD") +
     ggtitle("Probability of visiting Wikipedia in their most preferred language",
             subtitle = "Primary Links, Accept-Language doesn't include English") +
@@ -128,7 +155,13 @@ foo <- function(data) { # data <- sessions
     flip_rows %T>%
     { cat(knitr::kable(prop.table(., margin = 1), digits = 3), fill = TRUE) } %>%
     beta_binom %T>%
-    { cat(knitr::kable(summary(., interval_type = "HPD"), digits = 3), fill = TRUE) } %>%
+    {
+      summary_tbl <- summary(., interval_type = "HPD")
+      results[[3]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
+    } %>%
     plot(interval_type = "HPD") +
     ggtitle("Probability of visiting Wikipedia in one of their preferred languages",
             subtitle = "Primary Links, Accept-Language includes English") +
@@ -145,7 +178,13 @@ foo <- function(data) { # data <- sessions
     flip_rows %T>%
     { cat(knitr::kable(prop.table(., margin = 1), digits = 3), fill = TRUE) } %>%
     beta_binom %T>%
-    { cat(knitr::kable(summary(., interval_type = "HPD"), digits = 3), fill = TRUE) } %>%
+    {
+      summary_tbl <- summary(., interval_type = "HPD")
+      results[[4]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
+    } %>%
     plot(interval_type = "HPD") +
     ggtitle("Probability of visiting Wikipedia in their most preferred language",
             subtitle = "Primary Links, Accept-Language includes English") +
@@ -162,7 +201,13 @@ foo <- function(data) { # data <- sessions
     flip_rows %T>%
     { cat(knitr::kable(prop.table(., margin = 1), digits = 3), fill = TRUE) } %>%
     beta_binom %T>%
-    { cat(knitr::kable(summary(., interval_type = "HPD"), digits = 3), fill = TRUE) } %>%
+    {
+      summary_tbl <- summary(., interval_type = "HPD")
+      results[[5]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
+    } %>%
     plot(interval_type = "HPD") +
     ggtitle("Probability of visiting Wikipedia in one of their preferred languages",
             subtitle = "Primary Links, Combined (Not split by Eng.)") +
@@ -179,7 +224,13 @@ foo <- function(data) { # data <- sessions
     flip_rows %T>%
     { cat(knitr::kable(prop.table(., margin = 1), digits = 3), fill = TRUE) } %>%
     beta_binom %T>%
-    { cat(knitr::kable(summary(., interval_type = "HPD"), digits = 3), fill = TRUE) } %>%
+    {
+      summary_tbl <- summary(., interval_type = "HPD")
+      results[[6]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
+    } %>%
     plot(interval_type = "HPD") +
     ggtitle("Probability of visiting Wikipedia in their most preferred language",
             subtitle = "Primary Links, Combined (Not split by Eng.)") +
@@ -198,7 +249,13 @@ foo <- function(data) { # data <- sessions
     flip_rows %T>%
     { cat(knitr::kable(prop.table(., margin = 1), digits = 3), fill = TRUE) } %>%
     beta_binom %T>%
-    { cat(knitr::kable(summary(., interval_type = "HPD"), digits = 3), fill = TRUE) } %>%
+    {
+      summary_tbl <- summary(., interval_type = "HPD")
+      results[[7]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
+    } %>%
     plot(interval_type = "HPD") +
     ggtitle("Probability of visiting Wikipedia in one of their preferred languages",
             subtitle = "Secondary Links, Accept-Language doesn't include English") +
@@ -215,7 +272,13 @@ foo <- function(data) { # data <- sessions
     flip_rows %T>%
     { cat(knitr::kable(prop.table(., margin = 1), digits = 3), fill = TRUE) } %>%
     beta_binom %T>%
-    { cat(knitr::kable(summary(., interval_type = "HPD"), digits = 3), fill = TRUE) } %>%
+    {
+      summary_tbl <- summary(., interval_type = "HPD")
+      results[[8]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
+    } %>%
     plot(interval_type = "HPD") +
     ggtitle("Probability of visiting Wikipedia in their most preferred language",
             subtitle = "Secondary Links, Accept-Language doesn't include English") +
@@ -232,7 +295,13 @@ foo <- function(data) { # data <- sessions
     flip_rows %T>%
     { cat(knitr::kable(prop.table(., margin = 1), digits = 3), fill = TRUE) } %>%
     beta_binom %T>%
-    { cat(knitr::kable(summary(., interval_type = "HPD"), digits = 3), fill = TRUE) } %>%
+    {
+      summary_tbl <- summary(., interval_type = "HPD")
+      results[[9]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
+    } %>%
     plot(interval_type = "HPD") +
     ggtitle("Probability of visiting Wikipedia in one of their preferred languages",
             subtitle = "Secondary Links, Accept-Language includes English") +
@@ -249,7 +318,13 @@ foo <- function(data) { # data <- sessions
     flip_rows %T>%
     { cat(knitr::kable(prop.table(., margin = 1), digits = 3), fill = TRUE) } %>%
     beta_binom %T>%
-    { cat(knitr::kable(summary(., interval_type = "HPD"), digits = 3), fill = TRUE) } %>%
+    {
+      summary_tbl <- summary(., interval_type = "HPD")
+      results[[10]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
+    } %>%
     plot(interval_type = "HPD") +
     ggtitle("Probability of visiting Wikipedia in their most preferred language",
             subtitle = "Secondary Links, Accept-Language includes English") +
@@ -266,7 +341,13 @@ foo <- function(data) { # data <- sessions
     flip_rows %T>%
     { cat(knitr::kable(prop.table(., margin = 1), digits = 3), fill = TRUE) } %>%
     beta_binom %T>%
-    { cat(knitr::kable(summary(., interval_type = "HPD"), digits = 3), fill = TRUE) } %>%
+    {
+      summary_tbl <- summary(., interval_type = "HPD")
+      results[[11]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
+    } %>%
     plot(interval_type = "HPD") +
     ggtitle("Probability of visiting Wikipedia in one of their preferred languages",
             subtitle = "Secondary Links, Combined (Not split by Eng.)") +
@@ -283,15 +364,40 @@ foo <- function(data) { # data <- sessions
     flip_rows %T>%
     { cat(knitr::kable(prop.table(., margin = 1), digits = 3), fill = TRUE) } %>%
     beta_binom %T>%
-    { cat(knitr::kable(summary(., interval_type = "HPD"), digits = 3), fill = TRUE) } %>%
+    {
+      summary_tbl <- summary(., interval_type = "HPD")
+      results[[12]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
+    } %>%
     plot(interval_type = "HPD") +
     ggtitle("Probability of visiting Wikipedia in their most preferred language",
             subtitle = "Secondary Links, Combined (Not split by Eng.)") +
     theme_bw(base_family = "Gill Sans", base_size = 10) +
     geom_vline(xintercept = c(0, 1), linetype = "dashed")
   
-  return(cowplot::plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, ncol = 4, nrow = 3))
+  return(list(stats = do.call(rbind, results),
+              plots = cowplot::plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12,
+                                         ncol = 4, nrow = 3)))
   
 }
 
-(p <- foo(sessions))
+# p <- foo(sessions)
+# p <- foo(filter(sessions, `Primary language` != "English"))
+# p <- foo(filter(sessions, preferred_languages != "en"))
+# p <- foo(filter(sessions, `Number of Accept-Languages` > 1))
+
+data.frame(section = c(rep("primary", 6),
+                       rep("secondary", 6)),
+           includes_eng = rep(c(rep("A-L doesn't include En", 2),
+                                rep("A-L includes En", 2),
+                                rep("Combined (Not split by Eng.", 2)), 2),
+           visited_wikipedia = c("in one of their preferred languages",
+                                 "in their most preferred language")) %>%
+  cbind(p$stats) %>%
+  set_names(c("Link", "Includes English", "Visited Wikipedia",
+              "% Diff (B vs A)", "Relative Risk", "Odds Ratio")) %>%
+  knitr::kable(format = "latex", caption = "...caption...")
+
+print(p$plots)
