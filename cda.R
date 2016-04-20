@@ -36,7 +36,7 @@ ctr_overall %>%
   { print(plot(., interval_type = "HPD")) } %>%
   summary(interval_type = "HPD") %>%
   knitr::kable(digits = 4)
-  
+
 set.seed(0)
 ctr_overall %>%
   filter(!`Includes English`) %>%
@@ -87,10 +87,9 @@ foo <- function(data) { # data <- sessions
   
   results <- as.list(character(12))
   
-  format_confint <- function(est, ci, digits = 2, units = "", rescale = TRUE) {
+  format_confint <- function(est, ci, digits = 2, units = "") {
     if (units == "%") {
       units <- paste0(units, units)
-      est <- 100 * est; ci <- 100 * ci
     }
     type <- switch(typeof(est), "character" = "s", "double" = "f", "integer" = "i")
     x <- sprintf(paste0("%", ifelse(type == "character", "s", paste0(".", digits, type)), units), est)
@@ -111,7 +110,8 @@ foo <- function(data) { # data <- sessions
     beta_binom %T>%
     {
       summary_tbl <- summary(., interval_type = "HPD")
-      results[[1]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+      results[[1]] <<- list(prop_diff = format_confint(100 * as.numeric(summary_tbl[3, 1]),
+                                                       100 * as.numeric(summary_tbl[3, 3:4]), digits = 1),
                             rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
                             odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
       cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
@@ -134,7 +134,8 @@ foo <- function(data) { # data <- sessions
     beta_binom %T>%
     {
       summary_tbl <- summary(., interval_type = "HPD")
-      results[[2]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+      results[[2]] <<- list(prop_diff = format_confint(100 * as.numeric(summary_tbl[3, 1]),
+                                                       100 * as.numeric(summary_tbl[3, 3:4]), digits = 1),
                             rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
                             odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
       cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
@@ -157,7 +158,8 @@ foo <- function(data) { # data <- sessions
     beta_binom %T>%
     {
       summary_tbl <- summary(., interval_type = "HPD")
-      results[[3]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+      results[[3]] <<- list(prop_diff = format_confint(100 * as.numeric(summary_tbl[3, 1]),
+                                                       100 * as.numeric(summary_tbl[3, 3:4]), digits = 1),
                             rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
                             odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
       cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
@@ -180,7 +182,8 @@ foo <- function(data) { # data <- sessions
     beta_binom %T>%
     {
       summary_tbl <- summary(., interval_type = "HPD")
-      results[[4]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+      results[[4]] <<- list(prop_diff = format_confint(100 * as.numeric(summary_tbl[3, 1]),
+                                                       100 * as.numeric(summary_tbl[3, 3:4]), digits = 1),
                             rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
                             odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
       cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
@@ -203,7 +206,8 @@ foo <- function(data) { # data <- sessions
     beta_binom %T>%
     {
       summary_tbl <- summary(., interval_type = "HPD")
-      results[[5]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+      results[[5]] <<- list(prop_diff = format_confint(100 * as.numeric(summary_tbl[3, 1]),
+                                                       100 * as.numeric(summary_tbl[3, 3:4]), digits = 1),
                             rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
                             odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
       cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
@@ -226,7 +230,8 @@ foo <- function(data) { # data <- sessions
     beta_binom %T>%
     {
       summary_tbl <- summary(., interval_type = "HPD")
-      results[[6]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+      results[[6]] <<- list(prop_diff = format_confint(100 * as.numeric(summary_tbl[3, 1]),
+                                                       100 * as.numeric(summary_tbl[3, 3:4]), digits = 1),
                             rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
                             odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
       cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
@@ -251,7 +256,8 @@ foo <- function(data) { # data <- sessions
     beta_binom %T>%
     {
       summary_tbl <- summary(., interval_type = "HPD")
-      results[[7]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+      results[[7]] <<- list(prop_diff = format_confint(100 * as.numeric(summary_tbl[3, 1]),
+                                                       100 * as.numeric(summary_tbl[3, 3:4]), digits = 1),
                             rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
                             odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
       cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
@@ -274,7 +280,8 @@ foo <- function(data) { # data <- sessions
     beta_binom %T>%
     {
       summary_tbl <- summary(., interval_type = "HPD")
-      results[[8]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+      results[[8]] <<- list(prop_diff = format_confint(100 * as.numeric(summary_tbl[3, 1]),
+                                                       100 * as.numeric(summary_tbl[3, 3:4]), digits = 1),
                             rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
                             odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
       cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
@@ -297,7 +304,8 @@ foo <- function(data) { # data <- sessions
     beta_binom %T>%
     {
       summary_tbl <- summary(., interval_type = "HPD")
-      results[[9]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
+      results[[9]] <<- list(prop_diff = format_confint(100 * as.numeric(summary_tbl[3, 1]),
+                                                       100 * as.numeric(summary_tbl[3, 3:4]), digits = 1),
                             rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
                             odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
       cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
@@ -320,9 +328,10 @@ foo <- function(data) { # data <- sessions
     beta_binom %T>%
     {
       summary_tbl <- summary(., interval_type = "HPD")
-      results[[10]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
-                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
-                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      results[[10]] <<- list(prop_diff = format_confint(100 * as.numeric(summary_tbl[3, 1]),
+                                                        100 * as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                             rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                             odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
       cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
     } %>%
     plot(interval_type = "HPD") +
@@ -343,9 +352,10 @@ foo <- function(data) { # data <- sessions
     beta_binom %T>%
     {
       summary_tbl <- summary(., interval_type = "HPD")
-      results[[11]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
-                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
-                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      results[[11]] <<- list(prop_diff = format_confint(100 * as.numeric(summary_tbl[3, 1]),
+                                                        100 * as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                             rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
+                             odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
       cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
     } %>%
     plot(interval_type = "HPD") +
@@ -366,9 +376,12 @@ foo <- function(data) { # data <- sessions
     beta_binom %T>%
     {
       summary_tbl <- summary(., interval_type = "HPD")
-      results[[12]] <<- list(prop_diff = format_confint(as.numeric(summary_tbl[3, 1]), as.numeric(summary_tbl[3, 3:4]), digits = 1),
-                            rel_risk = format_confint(as.numeric(summary_tbl[4, 1]), as.numeric(summary_tbl[4, 3:4])),
-                            odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]), as.numeric(summary_tbl[5, 3:4])))
+      results[[12]] <<- list(prop_diff = format_confint(100 * as.numeric(summary_tbl[3, 1]),
+                                                        100 * as.numeric(summary_tbl[3, 3:4]), digits = 1),
+                             rel_risk = format_confint(as.numeric(summary_tbl[4, 1]),
+                                                       as.numeric(summary_tbl[4, 3:4])),
+                             odds_ratio = format_confint(as.numeric(summary_tbl[5, 1]),
+                                                         as.numeric(summary_tbl[5, 3:4])))
       cat(knitr::kable(summary_tbl, digits = 3), fill = TRUE)
     } %>%
     plot(interval_type = "HPD") +
@@ -386,7 +399,10 @@ foo <- function(data) { # data <- sessions
 # p <- foo(sessions)
 # p <- foo(filter(sessions, `Primary language` != "English"))
 # p <- foo(filter(sessions, preferred_languages != "en"))
-# p <- foo(filter(sessions, `Number of Accept-Languages` > 1))
+# p <- foo(filter(sessions, `Number of Accept-Languages` > 1)) # errors
+# ^ use data=filter(sessions, `Number of Accept-Languages` > 1) and go through foo() manually
+# doing only sections where A-L INCLUDES English or that are combined (not split by English)
+# then: p <- list(stats = do.call(rbind, results))
 
 data.frame(section = c(rep("primary", 6),
                        rep("secondary", 6)),

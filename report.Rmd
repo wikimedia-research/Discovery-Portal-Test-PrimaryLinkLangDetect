@@ -1,8 +1,8 @@
 ---
-title: "Wikipedia Portal Clickthrough Rates by User Language"
+title: "Wikipedia Portal A/B Test: Preferred Language Detection and Primary Link Reordering"
 author: Mikhail Popov (Analysis & Reporting), Jan Drewniak (UX Engineering), Deborah
   Tankersley (Product Management)
-date: "April 15, 2016"
+date: "April 19, 2016"
 output:
   pdf_document:
     fig_caption: yes
@@ -18,40 +18,59 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 \renewcommand{\abstractname}{Executive Summary}
 \begin{abstract}
+The Wikimedia Foundation (WMF) is dedicated to encouraging the growth, development, and distribution of free, \emph{multilingual}, educational content. WMF operates Wikipedia, a project to build free encyclopedias in \emph{all languages of the world}. For the Discovery Department's Portal team (tasked with making the wikipedia.org a more engaging and friendlier portal to free knowledge), it is important that all visitors, regardless of language, receive a more welcoming experience.
+
 ...
 \end{abstract}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\textwidth]{figures/header.png}
+  \caption*{How the Wikipedia Portal would look like to someone whose preferred languages are (in order): French, Arabic, Russian, German, Swahili, and English.}
+\end{figure}
+
+\newpage
 
 ## Introduction
 
 The Wikimedia Foundation (WMF) is dedicated to encouraging the growth, development, and distribution of free, *multilingual*, educational content. WMF operates Wikipedia, a project to build free encyclopedias in *all languages of the world*. For the Discovery Department's Portal team (tasked with making the wikipedia.org a more engaging and friendlier portal to free knowledge), it is important that all visitors, regardless of language, receive a more welcoming experience.
 
-![The three types of Wikipedia Portal interfaces we currently show our visitors. The language to search in is automatically set by the page according to user's preferred language. The third interface is currently an A/B test and affects users whose preferred language is one of the top 10 languages linked around the globe.](figures/portal.png)
-
-\newpage
+![The three types of Wikipedia Portal interfaces we currently show our visitors. The language to search in is automatically set by the page according to user's preferred language. The third interface was the A/B test.](figures/portal.png)
 
 ## Methods
 
-In general, we randomly select 1 in 200 users to be included in [Wikipedia Portal EventLogging schema](https://meta.wikimedia.org/wiki/Schema:WikipediaPortal). Of those, we randomly select 1 in 10 to be included in the A/B test. If selected for the test, the user is assigned either variation A (the default experience) or variation B (the experimental experience) with 50%/50% probability. The test ran for 22 days and we logged 35K users' clickthroughs and abandonments. We utilized the R package [*BCDA* (0.1.0)](https://github.com/bearloga/BCDA) to perform a Bayesian analysis of the test, assuming a Beta-Binomial model. The code for the [exploratory data analysis](https://github.com/wikimedia-research/Discovery-Portal-Test-PrimaryLinkLangDetect/blob/master/eda.R) and the [confirmatory data analysis](https://github.com/wikimedia-research/Discovery-Portal-Test-PrimaryLinkLangDetect/blob/master/cda.R) can be found on the [GitHub repository for this analysis](https://github.com/wikimedia-research/Discovery-Portal-Test-PrimaryLinkLangDetect).
+The code for the [exploratory data analysis](https://github.com/wikimedia-research/Discovery-Portal-Test-PrimaryLinkLangDetect/blob/master/eda.R) and the [confirmatory data analysis](https://github.com/wikimedia-research/Discovery-Portal-Test-PrimaryLinkLangDetect/blob/master/cda.R) can be found on the [GitHub repository for this analysis](https://github.com/wikimedia-research/Discovery-Portal-Test-PrimaryLinkLangDetect).
 
-## Results
+### Data Collection
 
-### Sampling and Bucketing
+In general, we randomly select 1 in 200 users to be included in [Wikipedia Portal EventLogging schema](https://meta.wikimedia.org/wiki/Schema:WikipediaPortal). Of those, we randomly selected 1 in 10 to be included in the A/B test. If selected for the test, the user is assigned either variation A (the default experience) or variation B (the experimental experience, see [demo](https://people.wikimedia.org/~jdrewniak/toplinks_a_b_test/index.html#language-detection-b)) with 50%/50% probability. The test was deployed 22 March 2016 (see [T124112](https://phabricator.wikimedia.org/T124112)) and ran for 22 days, a period during which we logged 35K users' clickthroughs and abandonments.
 
-In Fig. 2 we see that bucketing -- assigning randomly sampled users to either controls ("A") or the test group ("B") -- was performed evenly, without bias towards any particular language(s). In Fig. 3 we can see that if we look at just the clickthrough by group without breaking it up by section and without taking into consideration the user's preferred languages (from their Accept-Language header), the two groups behave nearly identically in aggregate.
+### Statistical Analysis
 
-![When looking at the top 10 primarily preferred languages by number of users, we see even bucketing of users into the two groups.](figures/lang_props.png)
+Under the conjugate Beta-Binomial model, each $i$-th group's number of successful outcomes $y_i$ follows a Binomial distribution with a Beta prior on the probability of success parameter $\pi_i$:
 
-![Daily and overall clickthrough rate for the whole dataset and broken down by group (controls vs test).](figures/daily_ctr.png)
+\begin{align*}
+  y_i &\sim~\text{Binomial}(n_i, \pi_i),~i~=~1,2;\\
+  \pi_i &\sim~\text{Beta}(\alpha_i, \beta_i),
+\end{align*}
+
+which yields a Beta posterior $p(\pi_i|y_i)$. We utilized the R package [*BCDA* (0.1.0)](https://github.com/bearloga/BCDA) to perform a Bayesian analysis of the collected logs, assuming a Beta-Binomial model for counts of successful outcomes among the groups.
 
 \newpage
 
+## Results
+
 ### Clickthrough Rates
+
+![Daily and overall clickthrough rate for the whole dataset and broken down by group (controls vs test). If we look at just the clickthrough by group without breaking it up by section and without taking into consideration the user's preferred languages (from their Accept-Language header), the two groups behave nearly identically.](figures/daily_ctr.png)
 
 Our **[previous investigation](https://commons.wikimedia.org/wiki/File:Analysis_of_Clickthrough_Rates_and_User_Preferred_Languages_on_Wikipedia_Portal.pdf)** of language preferences and engagement with Portal revealed that users whose preferences include English search more and engage with the primary links (the language links around the Wikipedia logo) more than users whose preferences do not include English. We see the same pattern in Fig. 4, where users whose preferences include English are much more likely to engage with the primary language links and the search box, while users whose preferences do not include English are more likely to engage with the secondary language links.
 
 We can also see in Figure 4 and Table 1 that in both sets of users, the test group is slighly more likely to engage with the primary links (the part affected by the A/B test) than the control group. Specifically, when considering only the users whose preferences included English (where we observed the largest difference), the test group has a 1.32% higher primary link clickthrough and is 1.064 times more likely to clickthrough than the control group.
 
 Unfortunately, these differences aren't "statistically significant" -- the 95% Bayesian confidence intervals include 0 for the difference of proportions and 1 for the relative risk, meaning we don't have evidence of big impact. The same numbers for the users who did not include English are: 0.84% difference and 1.053 times more more likely to click on a primary link. However, as we will see in the following section, the real difference is hidden in the relationship between the language of the Wikipedia the user goes to and their preferred language(s).
+
+\newpage
 
 ![Daily and overall clickthrough rate broken down by group (controls vs test) and section used (primary links around the globe, search box, secondary links) after excluding users who would not be affected by the test (users whose only preferred language is English).](figures/ctr_by_group_link_nonenglish.png)
 
@@ -110,7 +129,9 @@ In Figure \ref{fig:visits_non-en} and Table \ref{table:visits_non-en}...
 
 In Figure \ref{fig:visits_multilang} and Table \ref{table:visits_multilang}...
 
-\subsection*{Discussion}
+\section*{Discussion}
+
+...
 
 \newpage
 
@@ -131,8 +152,10 @@ In Figure \ref{fig:visits_multilang} and Table \ref{table:visits_multilang}...
 \hline
 \textbf{Link} & \textbf{Includes English} & \textbf{Visited Wikipedia} & \textbf{\% Diff (B vs A)} & \textbf{Relative Risk} & \textbf{Odds Ratio}\\
 \hline\hline
+\rowcolor{LightYellow}
 primary & A-L doesn't include En & in one of their preferred languages & 16.1 (9.9, 21.8) & 1.30 (1.18, 1.44) & 2.01 (1.51, 2.54)\\
 \hline
+\rowcolor{LightYellow}
 primary & A-L doesn't include En & in their most preferred language & 15.5 (9.4, 21.2) & 1.29 (1.17, 1.43) & 1.95 (1.47, 2.46)\\
 \hline
 primary & A-L includes En & in one of their preferred languages & 0.4 (-1.5, 2.3) & 1.00 (0.98, 1.03) & 1.06 (0.83, 1.31)\\
@@ -172,21 +195,24 @@ secondary & A-L includes En & in their most preferred language & -5.7 (-19.7, 10
 \hline
 Link & Includes English & Visited Wikipedia & \% Diff (B vs A) & Relative Risk & Odds Ratio\\
 \hline\hline
-primary & A-L doesn't include En & in one of their preferred languages & 0.2 (0.1, 0.2) & 1.30 (1.18, 1.44) & 2.01 (1.51, 2.54)\\
+\rowcolor{LightYellow}
+primary & A-L doesn't include En & in one of their preferred languages & 16.1 (9.9, 21.8) & 1.30 (1.18, 1.44) & 2.01 (1.51, 2.54)\\
 \hline
-primary & A-L doesn't include En & in their most preferred language & 0.2 (0.1, 0.2) & 1.29 (1.17, 1.43) & 1.95 (1.47, 2.46)\\
+\rowcolor{LightYellow}
+primary & A-L doesn't include En & in their most preferred language & 15.5 (9.4, 21.2) & 1.29 (1.17, 1.43) & 1.95 (1.47, 2.46)\\
 \hline
-primary & A-L includes En & in one of their preferred languages & -0.0 (-0.0, 0.0) & 0.99 (0.97, 1.02) & 0.90 (0.34, 1.55)\\
+primary & A-L includes En & in one of their preferred languages & -0.6 (-3.3, 2.1) & 0.99 (0.97, 1.02) & 0.90 (0.34, 1.55)\\
 \hline
-primary & A-L includes En & in their most preferred language & 0.1 (0.0, 0.2) & 1.25 (1.09, 1.42) & 1.59 (1.17, 2.04)\\
+\rowcolor{LightYellow}
+primary & A-L includes En & in their most preferred language & 11.3 (4.6, 18.2) & 1.25 (1.09, 1.42) & 1.59 (1.17, 2.04)\\
 \hline
-secondary & A-L doesn't include En & in one of their preferred languages & -0.1 (-0.3, 0.0) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
+secondary & A-L doesn't include En & in one of their preferred languages & -14.1 (-28.8, 1.5) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
 \hline
-secondary & A-L doesn't include En & in their most preferred language & -0.1 (-0.3, 0.0) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
+secondary & A-L doesn't include En & in their most preferred language & -14.1 (-28.8, 1.5) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
 \hline
-secondary & A-L includes En & in one of their preferred languages & 0.1 (-0.2, 0.4) & 1.14 (0.59, 1.77) & 1.60 (0.16, 3.99)\\
+secondary & A-L includes En & in one of their preferred languages & 5.3 (-24.5, 35.1) & 1.14 (0.59, 1.77) & 1.60 (0.16, 3.99)\\
 \hline
-secondary & A-L includes En & in their most preferred language & 0.2 (-0.1, 0.4) & 1.70 (0.56, 3.32) & 2.59 (0.21, 6.43)\\
+secondary & A-L includes En & in their most preferred language & 15.8 (-14.5, 44.3) & 1.70 (0.56, 3.32) & 2.59 (0.21, 6.43)\\
 \hline
 \end{tabular}
 \label{table:visits_non-prime-en}
@@ -213,21 +239,24 @@ secondary & A-L includes En & in their most preferred language & 0.2 (-0.1, 0.4)
 \hline
 \textbf{Link} & \textbf{Includes English} & \textbf{Visited Wikipedia} & \textbf{\% Diff (B vs A)} & \textbf{Relative Risk} & \textbf{Odds Ratio}\\
 \hline\hline
-primary & A-L doesn't include En & in one of their preferred languages & 0.2 (0.1, 0.2) & 1.30 (1.18, 1.44) & 2.01 (1.51, 2.54)\\
+\rowcolor{LightYellow}
+primary & A-L doesn't include En & in one of their preferred languages & 16.1 (9.9, 21.8) & 1.30 (1.18, 1.44) & 2.01 (1.51, 2.54)\\
 \hline
-primary & A-L doesn't include En & in their most preferred language & 0.2 (0.1, 0.2) & 1.29 (1.17, 1.43) & 1.95 (1.47, 2.46)\\
+\rowcolor{LightYellow}
+primary & A-L doesn't include En & in their most preferred language & 15.5 (9.4, 21.2) & 1.29 (1.17, 1.43) & 1.95 (1.47, 2.46)\\
 \hline
-primary & A-L includes En & in one of their preferred languages & -0.0 (-0.0, 0.0) & 1.00 (0.97, 1.02) & 0.94 (0.40, 1.57)\\
+primary & A-L includes En & in one of their preferred languages & -0.4 (-2.8, 2.0) & 1.00 (0.97, 1.02) & 0.94 (0.40, 1.57)\\
 \hline
-primary & A-L includes En & in their most preferred language & 0.1 (0.0, 0.1) & 1.16 (1.03, 1.30) & 1.40 (1.06, 1.77)\\
+\rowcolor{LightYellow}
+primary & A-L includes En & in their most preferred language & 8.2 (2.1, 14.4) & 1.16 (1.03, 1.30) & 1.40 (1.06, 1.77)\\
 \hline
-secondary & A-L doesn't include En & in one of their preferred languages & -0.1 (-0.3, 0.0) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
+secondary & A-L doesn't include En & in one of their preferred languages & -14.1 (-28.8, 1.5) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
 \hline
-secondary & A-L doesn't include En & in their most preferred language & -0.1 (-0.3, 0.0) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
+secondary & A-L doesn't include En & in their most preferred language & -14.1 (-28.8, 1.5) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
 \hline
-secondary & A-L includes En & in one of their preferred languages & 0.0 (-0.3, 0.3) & 1.03 (0.58, 1.54) & 1.21 (0.19, 2.78)\\
+secondary & A-L includes En & in one of their preferred languages & 0.1 (-26.9, 26.7) & 1.03 (0.58, 1.54) & 1.21 (0.19, 2.78)\\
 \hline
-secondary & A-L includes En & in their most preferred language & 0.1 (-0.2, 0.3) & 1.43 (0.46, 2.75) & 1.85 (0.27, 4.42)\\
+secondary & A-L includes En & in their most preferred language & 8.7 (-18.9, 35.0) & 1.43 (0.46, 2.75) & 1.85 (0.27, 4.42)\\
 \hline
 \end{tabular}
 \label{table:visits_non-en}
@@ -254,21 +283,23 @@ secondary & A-L includes En & in their most preferred language & 0.1 (-0.2, 0.3)
 \hline
 \textbf{Link} & \textbf{Includes English} & \textbf{Visited Wikipedia} & \textbf{\% Diff (B vs A)} & \textbf{Relative Risk} & \textbf{Odds Ratio}\\
 \hline\hline
-primary & A-L includes En & in one of their preferred languages & -0.0 (-0.0, 0.0) & 1.00 (0.97, 1.02) & 0.94 (0.40, 1.57)\\
+primary & A-L includes En & in one of their preferred languages & -0.4 (-2.8, 2.0) & 1.00 (0.97, 1.02) & 0.94 (0.40, 1.57)\\
 \hline
-primary & A-L includes En & in their most preferred language & 0.1 (0.0, 0.1) & 1.16 (1.03, 1.30) & 1.40 (1.06, 1.77)\\
+\rowcolor{LightYellow}
+primary & A-L includes En & in their most preferred language & 8.2 (2.1, 14.4) & 1.16 (1.03, 1.30) & 1.40 (1.06, 1.77)\\
 \hline
-primary & Combined (Not split by Eng. & in one of their preferred languages & -0.0 (-0.0, 0.0) & 0.99 (0.96, 1.02) & 0.84 (0.40, 1.37)\\
+primary & Combined (Not split by Eng. & in one of their preferred languages & -0.9 (-3.5, 1.6) & 0.99 (0.96, 1.02) & 0.84 (0.40, 1.37)\\
 \hline
-primary & Combined (Not split by Eng. & in their most preferred language & 0.1 (0.0, 0.1) & 1.15 (1.02, 1.29) & 1.36 (1.02, 1.70)\\
+\rowcolor{LightYellow}
+primary & Combined (Not split by Eng. & in their most preferred language & 7.5 (1.5, 13.9) & 1.15 (1.02, 1.29) & 1.36 (1.02, 1.70)\\
 \hline
-secondary & A-L includes En & in one of their preferred languages & 0.0 (-0.3, 0.3) & 1.03 (0.58, 1.54) & 1.21 (0.19, 2.78)\\
+secondary & A-L includes En & in one of their preferred languages & 0.1 (-26.9, 26.7) & 1.03 (0.58, 1.54) & 1.21 (0.19, 2.78)\\
 \hline
-secondary & A-L includes En & in their most preferred language & 0.1 (-0.2, 0.3) & 1.43 (0.46, 2.75) & 1.85 (0.27, 4.42)\\
+secondary & A-L includes En & in their most preferred language & 8.7 (-18.9, 35.0) & 1.43 (0.46, 2.75) & 1.85 (0.27, 4.42)\\
 \hline
-secondary & Combined (Not split by Eng. & in one of their preferred languages & 0.0 (-0.3, 0.3) & 1.03 (0.58, 1.54) & 1.21 (0.19, 2.78)\\
+secondary & Combined (Not split by Eng. & in one of their preferred languages & 0.1 (-26.9, 26.7) & 1.03 (0.58, 1.54) & 1.21 (0.19, 2.78)\\
 \hline
-secondary & Combined (Not split by Eng. & in their most preferred language & 0.1 (-0.2, 0.3) & 1.43 (0.46, 2.75) & 1.85 (0.27, 4.42)\\
+secondary & Combined (Not split by Eng. & in their most preferred language & 8.7 (-18.9, 35.0) & 1.43 (0.46, 2.75) & 1.85 (0.27, 4.42)\\
 \hline
 \end{tabular}
 \label{table:visits_multilang}
