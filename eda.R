@@ -34,9 +34,9 @@ p <- proportions_overall %>%
   scale_fill_brewer(type = "qual", palette = "Set1") +
   coord_flip() +
   ggtitle("Sampling of users by primary language and engagement with Portal",
-          subtitle = "Using only top 10 primarily preferred languages by # of users")
+          subtitle = "Using only top 10 most preferred languages by # of users")
 ggsave("lang_props.png", p, path = "figures", width = 10, height = 5, dpi = 300)
-rm(top_langs, proportions_overall, proportions_clickthroughed, proportions_by_section, p)
+rm(top_langs, proportions_overall, proportions_clickthroughed, p)
 
 ctr_daily <- sessions %>%
   filter(date > "2016-03-22") %>%
@@ -201,8 +201,9 @@ foo <- function(data) {
            # `Not in any of their preferred languages` = `Not in any of their preferred languages`/Total,
            `In their most preferred language` = `In their most preferred language`/Total) %>%
            # `Not in their most preferred language` = `Not in their most preferred language`/Total) %>%
-    select(-Total) %>%
-    tidyr::gather(visit_type, prop_users, -(1:3))
+    ungroup %>%
+    # select(-Total) %>%
+    tidyr::gather(visit_type, prop_users, -(1:4))
   visit_aggregates_all <- language_clicks %>%
     group_by(group, section) %>%
     summarize(`Total` = n(),
@@ -216,21 +217,23 @@ foo <- function(data) {
            # `Not in any of their preferred languages` = `Not in any of their preferred languages`/Total,
            `In their most preferred language` = `In their most preferred language`/Total) %>%
     # `Not in their most preferred language` = `Not in their most preferred language`/Total) %>%
-    select(-Total) %>%
-    tidyr::gather(visit_type, prop_users, -(1:2)) %>%
+    ungroup %>%
+    # select(-Total) %>%
+    tidyr::gather(visit_type, prop_users, -(1:3)) %>%
     mutate(includes_english = "Combined (Not split by Eng.)")
   # View(visit_aggregates)
   p <- visit_aggregates %>% rbind(visit_aggregates_all) %>%
+    mutate(visit_type = ordered(visit_type, levels = rev(sort(unique(visit_type))))) %>%
     ggplot(aes(y = prop_users, x = visit_type, fill = group)) +
     geom_bar(stat = "identity", position = "dodge") +
     facet_grid(section~includes_english) +
     labs(x = "Type of Wikipedia visited", y = "Proportion of users") +
     scale_y_continuous(breaks = seq(0, 1, 0.25),
                        labels = scales::percent_format(),
-                       limits = c(0, 1.1)) +
+                       limits = c(0, 1.25)) +
     theme_bw(base_family = "Gill Sans", base_size = 16) +
     theme(legend.position = "bottom") +
-    geom_text(aes(label = sprintf("%.1f%%", 100*prop_users), color = group),
+    geom_text(aes(label = sprintf("%.1f%% (%s)", 100*prop_users, polloi::compress(Total)), color = group),
               position = position_dodge(width = 1), fontface = "bold", hjust = -0.1) +
     scale_color_brewer(type = "qual", palette = "Set1") +
     scale_fill_brewer(type = "qual", palette = "Set1") +
@@ -244,7 +247,7 @@ p1 <- foo(sessions) +
 ggsave("wikipedia_visits_all.png", p1, path = "figures", width = 15, height = 5, dpi = 300)
 p2 <- foo(filter(sessions, `Primary language` != "English")) +
   ggtitle("Which Wikipedia the users head to from Portal",
-          subtitle = "Excluding users whose primarily preferred language is English")
+          subtitle = "Excluding users whose most preferred language is English")
 ggsave("wikipedia_visits_non-prime-En.png", p2, path = "figures", width = 15, height = 5, dpi = 300)
 p3 <- foo(filter(sessions, preferred_languages != "en")) +
   ggtitle("Which Wikipedia the users head to from Portal",
