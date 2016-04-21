@@ -1,7 +1,11 @@
 ---
-title: "Wikipedia Portal A/B Test: Preferred Language Detection and Primary Link Reordering"
-author: Mikhail Popov (Analysis & Reporting), Jan Drewniak (UX Engineering), Deborah
-  Tankersley (Product Management), Trey Jones (Review)
+title: "Report on Wikipedia Portal A/B Test"
+subtitle: "Preferred Language Detection and Primary Link Reordering"
+author:
+- Mikhail Popov (Analysis & Report)
+- Jan Drewniak (UX Engineering)
+- Deborah Tankersley (Product Management)
+- Trey Jones (Review)
 date: "April 20, 2016"
 fontsize: 11pt
 geometry: margin=0.5in
@@ -25,7 +29,7 @@ The Wikimedia Foundation (WMF) is dedicated to encouraging the growth, developme
 
 In this A/B test, the test group were presented with primary links that were dynamically filled in according to the users' preferred languages. Users who received these dynamic primary links were more likely to engage with those primary links than the users who received the default, static experience, albeit not by a lot. The biggest impact is actually found in \emph{\textbf{where}} those users went to from the Portal.
 
-Users were 7.5-16.1 times more likely to visit a Wikipedia in their most preferred language (or one of their preferred languages) when they were presented with primary links that reflected their preferred languages --- 7.5 times in the case of multilingual users, 16.1 times in the case of users whose Accept-Language did not include English. We believe this is evidence of localization having a positive effect on the users' experience and engagement with the Portal.
+When they were presented with primary links that reflected their preferred languages, they had a 7.5-16.1\% higher probability of visiting -- and were 1.15-1.3 times more likely to visit -- a Wikipedia in their most preferred language (or one of their preferred languages)  --- 7.5\% in the case of multilingual users, 16.1\% in the case of users whose Accept-Language did not include English. We believe this is evidence of localization having a positive effect on the users' experience and engagement with the Portal.
 \end{abstract}
 
 \begin{figure}[h]
@@ -67,9 +71,9 @@ which yields a Beta posterior $p(\pi_i|y_i)$. We utilized the R package [*BCDA* 
 
 ![Daily and overall clickthrough rate for the whole dataset and broken down by group (controls vs test). If we look at just the clickthrough by group without breaking it up by section and without taking into consideration the user's preferred languages (from their Accept-Language header), the two groups behave nearly identically.](figures/daily_ctr.png)
 
-Our **[previous investigation](https://commons.wikimedia.org/wiki/File:Analysis_of_Clickthrough_Rates_and_User_Preferred_Languages_on_Wikipedia_Portal.pdf)** of language preferences and engagement with Portal revealed that users whose preferences include English search more and engage with the primary links (the language links around the Wikipedia logo) more than users whose preferences do not include English. We see the same pattern in Fig. 4, where users whose preferences include English are much more likely to engage with the primary language links and the search box, while users whose preferences do not include English are more likely to engage with the secondary language links.
+Our [previous investigation](https://commons.wikimedia.org/wiki/File:Analysis_of_Clickthrough_Rates_and_User_Preferred_Languages_on_Wikipedia_Portal.pdf) of language preferences and engagement with Portal revealed that users whose preferences include English search more and engage with the primary links (the language links around the Wikipedia logo) more than users whose preferences do not include English. We see the same pattern in Fig. 4, where users whose preferences include English are much more likely to engage with the primary language links and the search box, while users whose preferences do not include English are more likely to engage with the secondary language links.
 
-We can also see in Figure 4 and Table 1 that in both sets of users, the test group is slighly more likely to engage with the primary links (the part affected by the A/B test) than the control group. Specifically, when considering only the users whose preferences included English (where we observed the largest difference), the test group has a 1.32% higher primary link clickthrough and is 1.064 times more likely to clickthrough than the control group.
+We can also see in Figure 4 and Table 1 that in both sets of users, the test group is slightly more likely to engage with the primary links (the part affected by the A/B test) than the control group. Specifically, when considering only the users whose preferences included English (where we observed the largest difference), the test group has a 1.32% higher primary link clickthrough and is 1.064 times more likely to clickthrough than the control group.
 
 Unfortunately, these differences aren't "statistically significant" -- the 95% Bayesian confidence intervals include 0 for the difference of proportions and 1 for the relative risk, meaning we don't have evidence of big impact. The same numbers for the users who did not include English are: 0.84% difference and 1.053 times more more likely to click on a primary link. However, as we will see in the following section, the real difference is hidden in the relationship between the language of the Wikipedia the user goes to and their preferred language(s).
 
@@ -84,7 +88,7 @@ Unfortunately, these differences aren't "statistically significant" -- the 95% B
 \caption{Clickthrough rate by accept-language, link, and group. This is the table version of Figure 4. Increases in primary link clickthrough rate cannibalize the clickthrough rates of other sections.}
 \centering
 \renewcommand{\arraystretch}{2.0}% for the vertical padding
-\begin{tabular}[t]{l|l|l|r|l}
+\begin{tabular}[t]{l|l|l|rl}
 \hline
 \textbf{Includes English} & \textbf{Link} & \textbf{Group} & \textbf{Clickthrough Rate} &\\
 \hline\hline
@@ -122,7 +126,7 @@ Accept-Language includes English & secondary & B (Test) & 0.87\% & $\downarrow$\
 
 \subsection*{Destination}
 
-Figures \ref{fig:visits_all}--\ref{fig:visits_multilang} and Tables \ref{table:visits_all}--\ref{table:visits_multilang} below summarize the statistical comparisons of the test group against the controls. "\% Diff" refers to --- for example --- "$\pi_\text{B}$ who visited Wikipedia in a preferred language \textbf{\emph{minus}} $\pi_\text{A}$ who visited Wikipedia in a preferred language", with positive numbers indicating that the proability of a successful outcome is greater in B than A. Relative risk is interpreted as "$X$ times more likely to visit Wikipedia in a preferred language" ($RR = \pi_\text{B}/\pi_\text{A}$) and odds ratio is interpreted as "the odds of group B users visiting Wikipedia in a preferred language are $X$ times the odds of group A users" ($OR = (\pi_\text{B}/(1-\pi_\text{B}))/(\pi_\text{A}/(1-\pi_\text{A}))$).
+Figures \ref{fig:visits_all}--\ref{fig:visits_multilang} and Tables \ref{table:visits_all}--\ref{table:visits_multilang} below summarize the statistical comparisons of the test group against the controls. "\% Diff" refers to --- for example --- "$\pi_\text{B}$ who visited Wikipedia in a preferred language \textbf{\emph{minus}} $\pi_\text{A}$ who visited Wikipedia in a preferred language", with positive numbers indicating that the probability of a successful outcome is greater in B than A. Relative risk is interpreted as "$X$ times more likely to visit Wikipedia in a preferred language" ($RR = \pi_\text{B}/\pi_\text{A}$) and odds ratio is interpreted as "the odds of group B users visiting Wikipedia in a preferred language are $X$ times the odds of group A users" ($OR = (\pi_\text{B}/(1-\pi_\text{B}))/(\pi_\text{A}/(1-\pi_\text{A}))$).
 
 Most notably (in Figure \ref{fig:visits_all} and Table \ref{table:visits_all}) 16.1\% more users whose Accept-Language header did not include English visited Wikipedia in one of their preferred languages in group B than in group A, and were 1.3 times more likely to go to a Wikipedia in one of their preferred languages. Furthermore, 15.5\% more B users visited a Wikipedia in their \emph{most} preferred language than A users, and were 1.3 times more likely to visit such a Wikipedia.
 
@@ -136,7 +140,7 @@ We see a similar pattern in Figure \ref{fig:visits_non-en} and Table \ref{table:
 
 In summary, users who saw the primary links that were dynamically filled in according to the users' preferred languages were more likely to engage with those primary links than the users who received the default, static experience, albeit not by a lot. The biggest impact is actually found in \emph{\textbf{where}} those users went to from the Portal.
 
-Users were 7.5-16.1 times more likely to visit a Wikipedia in their most preferred language (or one of their preferred languages) when they were presented with primary links that reflected their preferred languages --- 7.5 times in the case of multilingual users, 16.1 times in the case of users whose Accept-Language did not include English. We believe this is evidence of localization having a positive effect on the users' experience and engagement with the Portal.
+When they were presented with primary links that reflected their preferred languages, they had a 7.5-16.1\% higher probability of visiting -- and were 1.15-1.3 times more likely to visit -- a Wikipedia in their most preferred language (or one of their preferred languages)  --- 7.5\% in the case of multilingual users, 16.1\% in the case of users whose Accept-Language did not include English. We believe this is evidence of localization having a positive effect on the users' experience and engagement with the Portal.
 
 \newpage
 
