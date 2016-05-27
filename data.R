@@ -1,5 +1,5 @@
-start_date <- as.Date("2016-03-22")
-end_date <- Sys.Date()-1
+start_date <- as.Date("2016-03-23")
+end_date <- as.Date("2016-04-15")
 events <- do.call(rbind, lapply(seq(start_date, end_date, "day"), function(date) {
   cat("Fetching Portal EL data from ", as.character(date), "\n")
   data <- wmf::build_query("SELECT LEFT(timestamp, 8) AS date,
@@ -19,27 +19,35 @@ events <- do.call(rbind, lapply(seq(start_date, end_date, "day"), function(date)
 library(magrittr)
 events$date %<>% lubridate::ymd()
 events$ts %<>% lubridate::ymd_hms()
-events$type_id <- ifelse(events$type == "landing", 0, 1)
-events <- events[order(events$date, events$session, events$type_id), ]
-events$type_id <- NULL
-events <- events[!duplicated(events[, c("session", "type")], fromLast = TRUE), ]
-events$device <- uaparser::parse_agents(events$user_agent, fields = "device")
-events <- events[events$device != "Spider", ]
+names(events)[2] <- "session_id"
 
-import::from(dplyr, group_by, summarize, ungroup, mutate, rename, keep_where = filter, tbl_df)
+devices <- uaparser::parse_agents(events$user_agent, fields = "device")
+spider_session_ids <- unique(events$session_id[devices == "Spider"])
+events <- events[!(events$session_id %in% spider_session_ids), ]
+rm(devices, spider_session_ids)
+events$user_agent <- NULL
 
-sessions <- events %>%
-  group_by(date, session) %>%
-  summarize(group = head(test_group, 1),
-            destination = tail(destination, 1),
-            clickthrough =  all(c("landing", "clickthrough") %in% type),
-            section = tail(section_used, 1),
-            preferred_languages = head(preferred_languages, 1)) %>%
-  ungroup
+events$test_group <- ifelse(events$test_group == "language-detection-a", "A (Control)", "B (Test)")
+
+## Check that all is OK to separate the preferred languages into their own df:
+# library(dplyr)
+# events %>%
+#   group_by(session_id) %>%
+#   summarize(n = length(unique(preferred_languages))) %>%
+#   top_n(10, n)
+
+preferred_langs <- dplyr::distinct(events[, c("session_id", "preferred_languages")])
+bad_session_ids <- unique(preferred_langs[duplicated(preferred_langs$session_id), "session_id"])
+
+bad_sessions <- events[events$session_id %in% bad_session_ids, ]
+preferred_langs <- preferred_langs[!(preferred_langs$session_id %in% bad_session_ids), ]
+events <- events[!(events$session_id %in% bad_session_ids), ]
+events$preferred_languages <- NULL
+rm(bad_session_ids)
 
 # install.packages(c("NLP", "purrr"))
 library(purrr)
-accept_language <- sessions$preferred_languages %>%
+accept_language <- preferred_langs$preferred_languages %>%
   strsplit(",") %>%
   map_df(.f = function(lang_id) {
     langs <- tryCatch(unname(unlist(NLP::parse_IETF_language_tag(lang_id, expand = TRUE))),
@@ -55,16 +63,15 @@ accept_language <- sessions$preferred_languages %>%
                       stringsAsFactors = FALSE))
   }, .id = NULL) %>%
   set_names(c("Number of languages preceeding English", "Primary language", "Includes English", "Number of Accept-Languages"))
-
-sessions <- cbind(sessions, accept_language)
+preferred_langs <- cbind(preferred_langs, accept_language)
 rm(accept_language)
+events <- dplyr::left_join(events[, c("date", "ts", "session_id", "test_group", "type", "section_used", "destination")],
+                           preferred_langs, by = "session_id")
+rm(preferred_langs)
+events <- events[!is.na(events$`Primary language`), ]
 
-sessions %<>% keep_where(!is.na(`Primary language`)) %>% tbl_df
-sessions %<>% mutate(group = ifelse(group == "language-detection-a", "A (Control)", "B (Test)"))
-
-# sessions$affectable <- sessions$`Primary language` != "English" # & where their order doesn't match our default order
-readr::write_rds(sessions, "portal-lang-detect-test.rds", "gz")
+readr::write_rds(events, "portal-lang-detect-test-v2.rds", "gz")
 
 ## Locally:
 dir.create("data")
-system("scp stat2:/home/bearloga/portal-lang-detect-test.rds data/")
+system("scp stat2:/home/bearloga/portal-lang-detect-test-v2.rds data/")

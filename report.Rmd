@@ -1,12 +1,12 @@
 ---
-title: "Report on Wikipedia Portal A/B Test"
+title: "Report on Wikipedia Portal A/B Test (2nd Edition)"
 subtitle: "Preferred Language Detection and Primary Link Reordering"
 author:
 - Mikhail Popov (Analysis & Report)
 - Jan Drewniak (UX Engineering)
 - Deborah Tankersley (Product Management)
 - Trey Jones (Review)
-date: "April 20, 2016"
+date: "May 27, 2016"
 fontsize: 11pt
 geometry: margin=0.5in
 output:
@@ -29,7 +29,7 @@ The Wikimedia Foundation (WMF) is dedicated to encouraging the growth, developme
 
 In this A/B test, the test group were presented with primary links that were dynamically filled in according to the users' preferred languages. Users who received these dynamic primary links were more likely to engage with those primary links than the users who received the default, static experience, albeit not by a lot. The biggest impact is actually found in \emph{\textbf{where}} those users went to from the Portal.
 
-When they were presented with primary links that reflected their preferred languages, they had a 7.5-16.1\% higher probability of visiting -- and were 1.15-1.3 times more likely to visit -- a Wikipedia in their most preferred language (or one of their preferred languages)  --- 7.5\% in the case of multilingual users, 16.1\% in the case of users whose Accept-Language did not include English. We believe this is evidence of localization having a positive effect on the users' experience and engagement with the Portal.
+When they were presented with primary links that reflected their preferred languages, they had a 11.1-14.5\% higher probability of visiting (and were 1.23-1.27 times more likely to visit, respectively) a Wikipedia in their most preferred language (or one of their preferred languages) on their first visit -- 11.1\% in the case of multilingual users, 14.5\% in the case of users whose Accept-Language did not include English. We believe this is evidence of localization having a positive effect on the users' experience and engagement with the Portal.
 \end{abstract}
 
 \begin{figure}[h]
@@ -73,17 +73,19 @@ which yields a Beta posterior $p(\pi_i|y_i)$. We utilized the R package [*BCDA* 
 
 Our [previous investigation](https://commons.wikimedia.org/wiki/File:Analysis_of_Clickthrough_Rates_and_User_Preferred_Languages_on_Wikipedia_Portal.pdf) of language preferences and engagement with Portal revealed that users whose preferences include English search more and engage with the primary links (the language links around the Wikipedia logo) more than users whose preferences do not include English. We see the same pattern in Fig. 4, where users whose preferences include English are much more likely to engage with the primary language links and the search box, while users whose preferences do not include English are more likely to engage with the secondary language links.
 
-We can also see in Figure 4 and Table 1 that in both sets of users, the test group is slightly more likely to engage with the primary links (the part affected by the A/B test) than the control group. Specifically, when considering only the users whose preferences included English (where we observed the largest difference), the test group has a 1.32% higher primary link clickthrough and is 1.064 times more likely to clickthrough than the control group.
+We can also see in Figure 4 and Table 1 that in both sets of users, the test group is slightly more likely to engage with the primary links (the part affected by the A/B test) than the control group. Specifically, when considering only the users whose preferences included English (where we observed the largest difference), the test group has a 1.4% higher primary link clickthrough and is 1.067 times more likely to clickthrough than the control group.
 
-Unfortunately, these differences aren't "statistically significant" -- the 95% Bayesian confidence intervals include 0 for the difference of proportions and 1 for the relative risk, meaning we don't have evidence of big impact. The same numbers for the users who did not include English are: 0.84% difference and 1.053 times more more likely to click on a primary link. However, as we will see in the following section, the real difference is hidden in the relationship between the language of the Wikipedia the user goes to and their preferred language(s).
+Unfortunately, these differences aren't "statistically significant" -- the 95% Bayesian confidence intervals include 0 for the difference of proportions and 1 for the relative risk, meaning we don't have evidence of big impact. The same numbers for the users who did not include English are: 0.97% difference and 1.057 times more more likely to click on a primary link. However, as we will see in the following section, the real difference is hidden in the relationship between the language of the Wikipedia the user goes to and their preferred language(s).
 
 \newpage
 
-![Daily and overall clickthrough rate broken down by group (controls vs test) and section used (primary links around the globe, search box, secondary links) after excluding users who would not be affected by the test (users whose only preferred language is English).](figures/ctr_by_group_link_nonenglish.png)
+\begin{figure}[h!]
+\caption{Daily and overall clickthrough rate broken down by group (controls vs test) and section used (primary links around the globe, search box, secondary links) after excluding users who would not be affected by the test (users whose only preferred language is English).}
+\includegraphics{figures/ctr_by_group_link_nonenglish.png}
+\label{fig:ctr}
+\end{figure}
 
-\begin{landscape}
-
-\begin{table}
+\begin{table}[h!]
 \sffamily
 \caption{Clickthrough rate by accept-language, link, and group. This is the table version of Figure 4. Increases in primary link clickthrough rate cannibalize the clickthrough rates of other sections.}
 \centering
@@ -92,49 +94,47 @@ Unfortunately, these differences aren't "statistically significant" -- the 95% B
 \hline
 \textbf{Includes English} & \textbf{Link} & \textbf{Group} & \textbf{Clickthrough Rate} &\\
 \hline\hline
-Accept-Language doesn't include English & primary & A (Control) & 16.49\% &\\
+Accept-Language doesn't include English & primary & A (Control) & 17.08\\
 \hline
-Accept-Language doesn't include English & primary & B (Test) & 17.33\% & $\uparrow$\\
+Accept-Language doesn't include English & primary & B (Test) & 18.04 & $\uparrow$\\
 \hline
-Accept-Language doesn't include English & search & A (Control) & 26.06\% &\\
+Accept-Language doesn't include English & secondary & A (Control) & 1.81\\
 \hline
-Accept-Language doesn't include English & search & B (Test) & 25.35\% & $\downarrow$\\
+Accept-Language doesn't include English & secondary & B (Test) & 1.66 & $\downarrow$\\
 \hline
-Accept-Language doesn't include English & secondary & A (Control) & 1.51\% &\\
+Accept-Language includes English & primary & A (Control) & 21.42\\
 \hline
-Accept-Language doesn't include English & secondary & B (Test) & 1.50\% & $\downarrow$\\
+Accept-Language includes English & primary & B (Test) & 22.83 & $\uparrow$\\
 \hline
-Accept-Language includes English & primary & A (Control) & 21.18\% &\\
+Accept-Language includes English & secondary & A (Control) & 1.15\\
 \hline
-Accept-Language includes English & primary & B (Test) & 22.50\% & $\uparrow$\\
-\hline
-Accept-Language includes English & search & A (Control) & 38.22\% &\\
-\hline
-Accept-Language includes English & search & B (Test) & 35.67\% & $\downarrow$\\
-\hline
-Accept-Language includes English & secondary & A (Control) & 0.90\% &\\
-\hline
-Accept-Language includes English & secondary & B (Test) & 0.87\% & $\downarrow$\\
+Accept-Language includes English & secondary & B (Test) & 1.21 & $\uparrow$\\
 \hline
 \end{tabular}
 \label{table:ctr}
 \end{table}
 
-\end{landscape}
-
 \newpage
 
 \subsection*{Destination}
 
-Figures \ref{fig:visits_all}--\ref{fig:visits_multilang} and Tables \ref{table:visits_all}--\ref{table:visits_multilang} below summarize the statistical comparisons of the test group against the controls. "\% Diff" refers to --- for example --- "$\pi_\text{B}$ who visited Wikipedia in a preferred language \textbf{\emph{minus}} $\pi_\text{A}$ who visited Wikipedia in a preferred language", with positive numbers indicating that the probability of a successful outcome is greater in B than A. Relative risk is interpreted as "$X$ times more likely to visit Wikipedia in a preferred language" ($RR = \pi_\text{B}/\pi_\text{A}$) and odds ratio is interpreted as "the odds of group B users visiting Wikipedia in a preferred language are $X$ times the odds of group A users" ($OR = (\pi_\text{B}/(1-\pi_\text{B}))/(\pi_\text{A}/(1-\pi_\text{A}))$).
+Figures \ref{fig:visits_all}--\ref{fig:visits_multilang_2} and Tables \ref{table:visits_all}--\ref{table:visits_multilang_2} below summarize the statistical comparisons of the test group against the controls on their first and second visits. "\% Diff" refers to --- for example --- "$\pi_\text{B}$ who visited Wikipedia in a preferred language \textbf{\emph{minus}} $\pi_\text{A}$ who visited Wikipedia in a preferred language", with positive numbers indicating that the probability of a successful outcome is greater in B than A. Relative risk is interpreted as "$X$ times more likely to visit Wikipedia in a preferred language" ($RR = \pi_\text{B}/\pi_\text{A}$) and odds ratio is interpreted as "the odds of group B users visiting Wikipedia in a preferred language are $X$ times the odds of group A users" ($OR = (\pi_\text{B}/(1-\pi_\text{B}))/(\pi_\text{A}/(1-\pi_\text{A}))$).
 
-Most notably (in Figure \ref{fig:visits_all} and Table \ref{table:visits_all}) 16.1\% more users whose Accept-Language header did not include English visited Wikipedia in one of their preferred languages in group B than in group A, and were 1.3 times more likely to go to a Wikipedia in one of their preferred languages. Furthermore, 15.5\% more B users visited a Wikipedia in their \emph{most} preferred language than A users, and were 1.3 times more likely to visit such a Wikipedia.
+\subsubsection*{On First Visit}
 
-The other two comparisons imply that (1) the test does not appear to have had an effect on users whose Accept-Language header included English, and (2) the results for secondary links mirror the results for the primary links, but negative, which implies that people were indeed using the dynamic primary links to visit a Wikipedia in their language rather than the secondary links.
+Figures \ref{fig:visits_all}--\ref{fig:visits_multilang} and Tables \ref{table:visits_all}--\ref{table:visits_multilang} below summarize the statistical comparisons of the test group against the controls on their first visit.
 
-In Figure \ref{fig:visits_non-prime-en} and Table \ref{table:visits_non-prime-en}, where we excluded users whose most preferred language was English, we see the some of the same results as in Table \ref{table:visits_all} --- since the users whose Accept-Language doesn't include English would be in both subpopulations --- but we also notice that users whose Accept-Language \emph{does} include English (just not as the first language) were 1.25 times more likely to visit a Wikipedia in their most preferred language, with 11.3\% more users in the test group visiting a Wikipedia in their most preferred language than the control group.
+Most notably (in Figure \ref{fig:visits_all} and Table \ref{table:visits_all}) group B users whose Accept-Language header did not include English had a 14.5\% higher probability (1.3 times more likely) of visiting Wikipedia in one of their preferred languages on their first visit. They also had a 14.1\% higher probability (1.3 times more likely) of visitng a Wikipedia in their \emph{most} preferred language than group A users.
+
+The other two comparisons imply that (1) the test does not appear to have had an effect (or at least as much of an effect) on users whose Accept-Language header included English, and (2) the results for secondary links mirror the results for the primary links, but negative, which implies that people were indeed using the dynamic primary links to visit a Wikipedia in their language rather than the secondary links.
+
+In Figure \ref{fig:visits_non-prime-en} and Table \ref{table:visits_non-prime-en}, where we excluded users whose most preferred language was English, we see the some of the same results as in Table \ref{table:visits_all} --- since the users whose Accept-Language doesn't include English would be in both subpopulations --- but we also notice that test group users whose Accept-Language \emph{does} include English (just not as the first language) had 11.3\% higher probability of visiting (and were 1.34 times more likely to visit) a Wikipedia in their most preferred language.
 
 We see a similar pattern in Figure \ref{fig:visits_non-en} and Table \ref{table:visits_non-en}, where we excluded users whose only preferred language is English. In Figure \ref{fig:visits_multilang} and Table \ref{table:visits_multilang}, where we only looked at multilingual users, users were 1.16 times more likely to visit a Wikipedia in their most preferred language.
+
+\subsubsection*{On Second Visit}
+
+Figures \ref{fig:visits_all_2}--\ref{fig:visits_multilang_2} and Tables \ref{table:visits_all_2}--\ref{table:visits_multilang_2} below summarize the statistical comparisons of the test group against the controls on their second visit. The results do not have statistical significance and are presented here as a curiosity.
 
 \section*{Conclusion/Discussion}
 
@@ -147,14 +147,14 @@ When they were presented with primary links that reflected their preferred langu
 \begin{landscape}
 
 \begin{figure}
-\caption{The types of Wikipedias that \emph{all} users visited from the Portal.}
+\caption{The types of Wikipedias that \emph{all} users visited from the Portal on their first visit.}
 \includegraphics{figures/wikipedia_visits_all.png}
 \label{fig:visits_all}
 \end{figure}
 
 \begin{table}
 \sffamily
-\caption{Statistical comparisons of test group vs controls with respect to language of the Wikipedia they visited through a primary or secondary link, not excluding any users. Values in parentheses represent 95\% Bayesian Confidence Intervals -- meaning there is a 95\% probability the value of interest is inside the interval. ("Prim" = primary link, "Sec" = secondary link)}
+\caption{Statistical comparisons of test group vs controls with respect to language of the Wikipedia they visited through a primary or secondary link on their first visit, not excluding any users. Values in parentheses represent 95\% Bayesian Confidence Intervals -- meaning there is a 95\% probability the value of interest is inside the interval. ("Prim" = primary link, "Sec" = secondary link)}
 \centering
 \renewcommand{\arraystretch}{1.5}% for the vertical padding
 \begin{tabular}[t]{l|l|l|l|l|l|l|l|l|l}
@@ -162,22 +162,23 @@ When they were presented with primary links that reflected their preferred langu
 \textbf{Link} & \textbf{Includes English} & \textbf{Wikipedia language} & $n_\text{B}$ & $n_\text{A}$ & $\pi_\text{B}$ \textbf{(\%)} & $\pi_\text{A}$ \textbf{(\%)} & \textbf{\% Diff (B vs A)} & \textbf{Relative Risk} & \textbf{Odds Ratio}\\
 \hline\hline
 \rowcolor{LightYellow}
-Prim & A-L doesn't include En & one of preferred & 515 & 489 & 69.4 (65.4, 73.3) & 53.3 (49.0, 57.7) & 16.1 (9.9, 21.8) & 1.30 (1.18, 1.44) & 2.01 (1.51, 2.54)\\
+Prim & A-L doesn't include En & one of preferred & 504 & 484 & 69.0 (64.8, 72.9) & 54.5 (50.2, 58.9) & 14.5 (8.2, 20.2) & 1.27 (1.14, 1.39) & 1.87 (1.40, 2.37)\\
 \hline
 \rowcolor{LightYellow}
-Prim & A-L doesn't include En & most preferred & 515 & 489 & 68.9 (64.8, 72.8) & 53.3 (49.0, 57.7) & 15.5 (9.4, 21.2) & 1.29 (1.17, 1.43) & 1.95 (1.47, 2.46)\\
+Prim & A-L doesn't include En & most preferred & 504 & 484 & 68.6 (64.4, 72.5) & 54.5 (50.2, 58.9) & 14.1 (8.3, 20.3) & 1.26 (1.14, 1.39) & 1.84 (1.38, 2.32)\\
 \hline
-Prim & A-L includes En & one of preferred & 1.8K & 1.8K & 91.1 (89.7, 92.4) & 90.7 (89.3, 92.0) & 0.4 (-1.5, 2.3) & 1.00 (0.98, 1.03) & 1.06 (0.83, 1.31)\\
+Prim & A-L includes En & one of preferred & 1.8K & 1.8K & 91.3 (89.9, 92.5) & 91.0 (89.7, 92.3) & 0.2 (-1.6, 2.1) & 1.00 (0.98, 1.02) & 1.04 (0.81, 1.29)\\
 \hline
-Prim & A-L includes En & most preferred & 1.8K & 1.8K & 80.2 (78.3, 82.0) & 78.3 (76.4, 80.2) & 1.9 (-0.7, 4.6) & 1.02 (0.99, 1.06) & 1.13 (0.95, 1.31)\\
+\rowcolor{LightYellow}
+Prim & A-L includes En & most preferred & 1.8K & 1.8K & 81.6 (79.7, 83.3) & 78.6 (76.6, 80.4) & 3.0 (0.3, 5.5) & 1.04 (1.00, 1.07) & 1.21 (1.02, 1.42)\\
 \hline
-Sec & A-L doesn't include En & one of preferred & 44 & 46 & 10.9 (2.8, 19.8) & 25.0 (13.4, 36.9) & -14.1 (-28.8, 1.5) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
+Sec & A-L doesn't include En & one of preferred & 43 & 38 & 15.6 (5.7, 26.1) & 32.5 (18.3, 46.4) & -17.0 (-34.6, 0.8) & 0.51 (0.15, 0.95) & 0.43 (0.08, 0.92)\\
 \hline
-Sec & A-L doesn't include En & most preferred & 44 & 46 & 10.9 (2.8, 19.8) & 25.0 (13.4, 36.9) & -14.1 (-28.8, 1.5) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
+Sec & A-L doesn't include En & most preferred & 43 & 38 & 15.6 (5.7, 26.1) & 32.5 (18.3, 46.4) & -17.0 (-34.6, 0.8) & 0.51 (0.15, 0.95) & 0.43 (0.08, 0.92)\\
 \hline
-Sec & A-L includes En & one of preferred & 65 & 62 & 29.9 (19.3, 41.0) & 39.1 (27.7, 51.1) & -9.2 (-25.1, 6.9) & 0.78 (0.42, 1.17) & 0.71 (0.26, 1.25)\\
+Sec & A-L includes En & one of preferred & 63 & 63 & 30.8 (19.9, 42.2) & 40.0 (28.6, 52.0) & -9.3 (-25.2, 6.8) & 0.79 (0.43, 1.15) & 0.71 (0.26, 1.23)\\
 \hline
-Sec & A-L includes En & most preferred & 65 & 62 & 22.4 (12.5, 32.2) & 28.1 (17.2, 38.7) & -5.7 (-19.7, 10.0) & 0.83 (0.38, 1.35) & 0.80 (0.27, 1.48)\\
+Sec & A-L includes En & most preferred & 63 & 63 & 23.1 (12.9, 33.1) & 29.2 (18.2, 39.8) & -6.2 (-20.5, 9.2) & 0.82 (0.38, 1.32) & 0.78 (0.27, 1.44)\\
 \hline
 \end{tabular}
 \label{table:visits_all}
@@ -190,14 +191,14 @@ Sec & A-L includes En & most preferred & 65 & 62 & 22.4 (12.5, 32.2) & 28.1 (17.
 \begin{landscape}
 
 \begin{figure}
-\caption{The types of Wikipedias that \emph{non-\textbf{primarily}-English-speaking} users visited from the Portal.}
+\caption{The types of Wikipedias that \emph{non-\textbf{primarily}-English-speaking} users visited from the Portal on their first visit.}
 \includegraphics{figures/wikipedia_visits_non-prime-En.png}
 \label{fig:visits_non-prime-en}
 \end{figure}
 
 \begin{table}
 \sffamily
-\caption{Statistical comparisons of test group vs controls with respect to language of the Wikipedia they visited through a primary or secondary link, excluding users whose most preferred language is English. Values in parentheses represent 95\% Bayesian Confidence Intervals -- meaning there is a 95\% probability the value of interest is inside the interval. ("Prim" = primary link, "Sec" = secondary link)}
+\caption{Statistical comparisons of test group vs controls with respect to language of the Wikipedia they visited through a primary or secondary link on their first visit, excluding users whose most preferred language is English. Values in parentheses represent 95\% Bayesian Confidence Intervals -- meaning there is a 95\% probability the value of interest is inside the interval. ("Prim" = primary link, "Sec" = secondary link)}
 \centering
 \renewcommand{\arraystretch}{1.5}% for the vertical padding
 \begin{tabular}[t]{l|l|l|l|l|l|l|l|l|l}
@@ -205,23 +206,23 @@ Sec & A-L includes En & most preferred & 65 & 62 & 22.4 (12.5, 32.2) & 28.1 (17.
 \textbf{Link} & \textbf{Includes English} & \textbf{Wikipedia language} & $n_\text{B}$ & $n_\text{A}$ & $\pi_\text{B}$ \textbf{(\%)} & $\pi_\text{A}$ \textbf{(\%)} & \textbf{\% Diff (B vs A)} & \textbf{Relative Risk} & \textbf{Odds Ratio}\\
 \hline\hline
 \rowcolor{LightYellow}
-Prim & A-L doesn't include En & one of preferred & 515 & 489 & 69.4 (65.4, 73.3) & 53.3 (49.0, 57.7) & 16.1 (9.9, 21.8) & 1.30 (1.18, 1.44) & 2.01 (1.51, 2.54)\\
+Prim & A-L doesn't include En & one of preferred & 504 & 484 & 69.0 (64.8, 72.9) & 54.5 (50.2, 58.9) & 14.5 (8.2, 20.2) & 1.27 (1.14, 1.39) & 1.87 (1.40, 2.37)\\
 \hline
 \rowcolor{LightYellow}
-Prim & A-L doesn't include En & most preferred & 515 & 489 & 68.9 (64.8, 72.8) & 53.3 (49.0, 57.7) & 15.5 (9.4, 21.2) & 1.29 (1.17, 1.43) & 1.95 (1.47, 2.46)\\
+Prim & A-L doesn't include En & most preferred & 504 & 484 & 68.6 (64.4, 72.5) & 54.5 (50.2, 58.9) & 14.1 (8.3, 20.3) & 1.26 (1.14, 1.39) & 1.84 (1.38, 2.32)\\
 \hline
-Prim & A-L includes En & one of preferred & 433 & 399 & 95.6 (93.6, 97.5) & 96.3 (94.3, 97.9) & -0.6 (-3.3, 2.1) & 0.99 (0.97, 1.02) & 0.90 (0.34, 1.55)\\
+Prim & A-L includes En & one of preferred & 427 & 401 & 95.1 (93.0, 97.1) & 95.8 (93.8, 97.6) & -0.7 (-3.4, 2.3) & 0.99 (0.96, 1.02) & 0.90 (0.38, 1.54)\\
 \hline
 \rowcolor{LightYellow}
-Prim & A-L includes En & most preferred & 433 & 399 & 57.5 (52.8, 62.1) & 46.2 (41.3, 50.9) & 11.3 (4.6, 18.2) & 1.25 (1.09, 1.42) & 1.59 (1.17, 2.04)\\
+Prim & A-L includes En & most preferred & 427 & 401 & 60.6 (55.9, 65.2) & 45.4 (40.6, 50.2) & 15.2 (8.7, 22.1) & 1.34 (1.16, 1.52) & 1.87 (1.38, 2.41)\\
 \hline
-Sec & A-L doesn't include En & one of preferred & 44 & 46 & 10.9 (2.8, 19.8) & 25.0 (13.4, 36.9) & -14.1 (-28.8, 1.5) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
+Sec & A-L doesn't include En & one of preferred & 43 & 38 & 15.6 (5.7, 26.1) & 32.5 (18.3, 46.4) & -17.0 (-34.6, 0.8) & 0.51 (0.15, 0.95) & 0.43 (0.08, 0.92)\\
 \hline
-Sec & A-L doesn't include En & most preferred & 44 & 46 & 10.9 (2.8, 19.8) & 25.0 (13.4, 36.9) & -14.1 (-28.8, 1.5) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
+Sec & A-L doesn't include En & most preferred & 43 & 38 & 15.6 (5.7, 26.1) & 32.5 (18.3, 46.4) & -17.0 (-34.6, 0.8) & 0.51 (0.15, 0.95) & 0.43 (0.08, 0.92)\\
 \hline
-Sec & A-L includes En & one of preferred & 17 & 17 & 63.1 (42.4, 84.1) & 57.8 (36.0, 78.5) & 5.3 (-24.5, 35.1) & 1.14 (0.59, 1.77) & 1.60 (0.16, 3.99)\\
+Sec & A-L includes En & one of preferred & 20 & 19 & 54.5 (33.4, 73.9) & 52.3 (31.0, 71.8) & 2.2 (-26.6, 31.0) & 1.09 (0.52, 1.74) & 1.33 (0.19, 3.16)\\
 \hline
-Sec & A-L includes En & most preferred & 17 & 17 & 47.4 (26.3, 69.8) & 31.6 (12.5, 52.0) & 15.8 (-14.5, 44.3) & 1.70 (0.56, 3.32) & 2.59 (0.21, 6.43)\\
+Sec & A-L includes En & most preferred & 20 & 19 & 40.9 (21.0, 61.1) & 28.6 (10.9, 47.5) & 12.3 (-16.2, 39.1) & 1.64 (0.48, 3.22) & 2.26 (0.26, 5.50)\\
 \hline
 \end{tabular}
 \label{table:visits_non-prime-en}
@@ -234,14 +235,14 @@ Sec & A-L includes En & most preferred & 17 & 17 & 47.4 (26.3, 69.8) & 31.6 (12.
 \begin{landscape}
 
 \begin{figure}
-\caption{The types of Wikipedias that \emph{not-\textbf{just}-English-speaking} users visited from the Portal.}
+\caption{The types of Wikipedias that \emph{not-\textbf{just}-English-speaking} users visited from the Portal on their first visit.}
 \includegraphics{figures/wikipedia_visits_non-En.png}
 \label{fig:visits_non-en}
 \end{figure}
 
 \begin{table}
 \sffamily
-\caption{Statistical comparisons of test group vs controls with respect to language of the Wikipedia they visited through a primary or secondary link, excluding users whose only preferred language is English. Values in parentheses represent 95\% Bayesian Confidence Intervals -- meaning there is a 95\% probability the value of interest is inside the interval. ("Prim" = primary link, "Sec" = secondary link)}
+\caption{Statistical comparisons of test group vs controls with respect to language of the Wikipedia they visited through a primary or secondary link on their first visit, excluding users whose only preferred language is English. Values in parentheses represent 95\% Bayesian Confidence Intervals -- meaning there is a 95\% probability the value of interest is inside the interval. ("Prim" = primary link, "Sec" = secondary link)}
 \centering
 \renewcommand{\arraystretch}{1.5}% for the vertical padding
 \begin{tabular}[t]{l|l|l|l|l|l|l|l|l|l}
@@ -249,23 +250,23 @@ Sec & A-L includes En & most preferred & 17 & 17 & 47.4 (26.3, 69.8) & 31.6 (12.
 \textbf{Link} & \textbf{Includes English} & \textbf{Wikipedia language} & $n_\text{B}$ & $n_\text{A}$ & $\pi_\text{B}$ \textbf{(\%)} & $\pi_\text{A}$ \textbf{(\%)} & \textbf{\% Diff (B vs A)} & \textbf{Relative Risk} & \textbf{Odds Ratio}\\
 \hline\hline
 \rowcolor{LightYellow}
-Prim & A-L doesn't include En & one of preferred & 515 & 489 & 69.4 (65.4, 73.3) & 53.3 (49.0, 57.7) & 16.1 (9.9, 21.8) & 1.30 (1.18, 1.44) & 2.01 (1.51, 2.54)\\
+Prim & A-L doesn't include En & one of preferred & 504 & 484 & 69.0 (64.8, 72.9) & 54.5 (50.2, 58.9) & 14.5 (8.2, 20.2) & 1.27 (1.14, 1.39) & 1.87 (1.40, 2.37)\\
 \hline
 \rowcolor{LightYellow}
-Prim & A-L doesn't include En & most preferred & 515 & 489 & 68.9 (64.8, 72.8) & 53.3 (49.0, 57.7) & 15.5 (9.4, 21.2) & 1.29 (1.17, 1.43) & 1.95 (1.47, 2.46)\\
+Prim & A-L doesn't include En & most preferred & 504 & 484 & 68.6 (64.4, 72.5) & 54.5 (50.2, 58.9) & 14.1 (8.3, 20.3) & 1.26 (1.14, 1.39) & 1.84 (1.38, 2.32)\\
 \hline
-Prim & A-L includes En & one of preferred & 519 & 474 & 95.8 (94.0, 97.4) & 96.2 (94.5, 97.8) & -0.4 (-2.8, 2.0) & 1.00 (0.97, 1.02) & 0.94 (0.40, 1.57)\\
+Prim & A-L includes En & one of preferred & 510 & 473 & 94.9 (93.0, 96.8) & 95.6 (93.7, 97.3) & -0.7 (-3.3, 2.0) & 0.99 (0.97, 1.02) & 0.90 (0.43, 1.47)\\
 \hline
 \rowcolor{LightYellow}
-Prim & A-L includes En & most preferred & 519 & 474 & 58.3 (54.1, 62.6) & 50.2 (45.6, 54.5) & 8.2 (2.1, 14.4) & 1.16 (1.03, 1.30) & 1.40 (1.06, 1.77)\\
+Prim & A-L includes En & most preferred & 510 & 473 & 60.9 (56.7, 65.1) & 49.3 (45.0, 53.8) & 11.7 (5.7, 18.1) & 1.24 (1.10, 1.38) & 1.62 (1.23, 2.05)\\
 \hline
-Sec & A-L doesn't include En & one of preferred & 44 & 46 & 10.9 (2.8, 19.8) & 25.0 (13.4, 36.9) & -14.1 (-28.8, 1.5) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
+Sec & A-L doesn't include En & one of preferred & 43 & 38 & 15.6 (5.7, 26.1) & 32.5 (18.3, 46.4) & -17.0 (-34.6, 0.8) & 0.51 (0.15, 0.95) & 0.43 (0.08, 0.92)\\
 \hline
-Sec & A-L doesn't include En & most preferred & 44 & 46 & 10.9 (2.8, 19.8) & 25.0 (13.4, 36.9) & -14.1 (-28.8, 1.5) & 0.46 (0.09, 0.93) & 0.41 (0.06, 0.92)\\
+Sec & A-L doesn't include En & most preferred & 43 & 38 & 15.6 (5.7, 26.1) & 32.5 (18.3, 46.4) & -17.0 (-34.6, 0.8) & 0.51 (0.15, 0.95) & 0.43 (0.08, 0.92)\\
 \hline
-Sec & A-L includes En & one of preferred & 21 & 21 & 60.8 (41.5, 80.4) & 60.8 (40.7, 79.1) & 0.1 (-26.9, 26.7) & 1.03 (0.58, 1.54) & 1.21 (0.19, 2.78)\\
+Sec & A-L includes En & one of preferred & 25 & 23 & 51.8 (33.1, 70.0) & 55.9 (36.7, 74.2) & -4.1 (-31.4, 21.5) & 0.96 (0.51, 1.49) & 0.99 (0.19, 2.21)\\
 \hline
-Sec & A-L includes En & most preferred & 21 & 21 & 39.2 (19.6, 58.5) & 30.5 (13.2, 48.9) & 8.7 (-18.9, 35.0) & 1.43 (0.46, 2.75) & 1.85 (0.27, 4.42)\\
+Sec & A-L includes En & most preferred & 25 & 23 & 33.4 (16.2, 50.8) & 28.0 (11.7, 45.2) & 5.3 (-19.0, 29.8) & 1.33 (0.38, 2.53) & 1.58 (0.23, 3.64)\\
 \hline
 \end{tabular}
 \label{table:visits_non-en}
@@ -278,40 +279,188 @@ Sec & A-L includes En & most preferred & 21 & 21 & 39.2 (19.6, 58.5) & 30.5 (13.
 \begin{landscape}
 
 \begin{figure}
-\caption{The types of Wikipedias that \emph{multilingual} users visited from the Portal.}
+\caption{The types of Wikipedias that \emph{multilingual} users visited from the Portal on their first visit.}
 \includegraphics{figures/wikipedia_visits_multilang.png}
 \label{fig:visits_multilang}
 \end{figure}
 
 \begin{table}
 \sffamily
-\caption{Statistical comparisons of test group vs controls with respect to language of the Wikipedia they visited through a primary or secondary link, looking at multilingual users only. Values in parentheses represent 95\% Bayesian Confidence Intervals -- meaning there is a 95\% probability the value of interest is inside the interval. ("Prim" = primary link, "Sec" = secondary link)}
+\caption{Statistical comparisons of test group vs controls with respect to language of the Wikipedia they visited through a primary or secondary link on their first visit, looking at multilingual users only. Values in parentheses represent 95\% Bayesian Confidence Intervals -- meaning there is a 95\% probability the value of interest is inside the interval. ("Prim" = primary link, "Sec" = secondary link)}
 \centering
 \renewcommand{\arraystretch}{1.5}% for the vertical padding
 \begin{tabular}[t]{l|l|l|l|l|l|l|l|l|l}
 \hline
 \textbf{Link} & \textbf{Includes English} & \textbf{Wikipedia language} & $n_\text{B}$ & $n_\text{A}$ & $\pi_\text{B}$ \textbf{(\%)} & $\pi_\text{A}$ \textbf{(\%)} & \textbf{\% Diff (B vs A)} & \textbf{Relative Risk} & \textbf{Odds Ratio}\\
 \hline\hline
-Prim & A-L includes En & one of preferred & 519 & 474 & 95.8 (94.0, 97.4) & 96.2 (94.5, 97.8) & -0.4 (-2.8, 2.0) & 1.00 (0.97, 1.02) & 0.94 (0.40, 1.57)\\
+Prim & A-L includes En & one of preferred & 510 & 473 & 94.9 (93.0, 96.8) & 95.6 (93.7, 97.3) & -0.7 (-3.3, 2.0) & 0.99 (0.97, 1.02) & 0.90 (0.43, 1.47)\\
 \hline
 \rowcolor{LightYellow}
-Prim & A-L includes En & most preferred & 519 & 474 & 58.3 (54.1, 62.6) & 50.2 (45.6, 54.5) & 8.2 (2.1, 14.4) & 1.16 (1.03, 1.30) & 1.40 (1.06, 1.77)\\
+Prim & A-L includes En & most preferred & 510 & 473 & 60.9 (56.7, 65.1) & 49.3 (45.0, 53.8) & 11.7 (5.7, 18.1) & 1.24 (1.10, 1.38) & 1.62 (1.23, 2.05)\\
 \hline
-Prim & Combined (Not split by Eng. & one of preferred & 526 & 475 & 95.1 (93.2, 96.9) & 96.0 (94.2, 97.7) & -0.9 (-3.5, 1.6) & 0.99 (0.96, 1.02) & 0.84 (0.40, 1.37)\\
+Prim & Combined (Not split by Eng. & one of preferred & 516 & 474 & 94.2 (92.2, 96.2) & 95.4 (93.5, 97.1) & -1.2 (-4.0, 1.4) & 0.99 (0.96, 1.02) & 0.82 (0.41, 1.30)\\
 \hline
 \rowcolor{LightYellow}
-Prim & Combined (Not split by Eng. & most preferred & 526 & 475 & 57.6 (53.3, 61.8) & 50.1 (45.5, 54.4) & 7.5 (1.5, 13.9) & 1.15 (1.02, 1.29) & 1.36 (1.02, 1.70)\\
+Prim & Combined (Not split by Eng. & most preferred & 516 & 474 & 60.2 (56.0, 64.4) & 49.2 (44.8, 53.7) & 11.1 (4.5, 17.0) & 1.23 (1.08, 1.37) & 1.58 (1.19, 1.99)\\
 \hline
-Sec & A-L includes En & one of preferred & 21 & 21 & 60.8 (41.5, 80.4) & 60.8 (40.7, 79.1) & 0.1 (-26.9, 26.7) & 1.03 (0.58, 1.54) & 1.21 (0.19, 2.78)\\
+Sec & A-L includes En & one of preferred & 25 & 23 & 51.8 (33.1, 70.0) & 55.9 (36.7, 74.2) & -4.1 (-31.4, 21.5) & 0.96 (0.51, 1.49) & 0.99 (0.19, 2.21)\\
 \hline
-Sec & A-L includes En & most preferred & 21 & 21 & 39.2 (19.6, 58.5) & 30.5 (13.2, 48.9) & 8.7 (-18.9, 35.0) & 1.43 (0.46, 2.75) & 1.85 (0.27, 4.42)\\
+Sec & A-L includes En & most preferred & 25 & 23 & 33.4 (16.2, 50.8) & 28.0 (11.7, 45.2) & 5.3 (-19.0, 29.8) & 1.33 (0.38, 2.53) & 1.58 (0.23, 3.64)\\
 \hline
-Sec & Combined (Not split by Eng. & one of preferred & 21 & 21 & 60.8 (41.5, 80.4) & 60.8 (40.7, 79.1) & 0.1 (-26.9, 26.7) & 1.03 (0.58, 1.54) & 1.21 (0.19, 2.78)\\
+Sec & Combined (Not split by Eng. & one of preferred & 25 & 23 & 51.8 (33.1, 70.0) & 55.9 (36.7, 74.2) & -4.1 (-31.4, 21.5) & 0.96 (0.51, 1.49) & 0.99 (0.19, 2.21)\\
 \hline
-Sec & Combined (Not split by Eng. & most preferred & 21 & 21 & 39.2 (19.6, 58.5) & 30.5 (13.2, 48.9) & 8.7 (-18.9, 35.0) & 1.43 (0.46, 2.75) & 1.85 (0.27, 4.42)\\
+Sec & Combined (Not split by Eng. & most preferred & 25 & 23 & 33.4 (16.2, 50.8) & 28.0 (11.7, 45.2) & 5.3 (-19.0, 29.8) & 1.33 (0.38, 2.53) & 1.58 (0.23, 3.64)\\
 \hline
 \end{tabular}
 \label{table:visits_multilang}
+\end{table}
+
+\end{landscape}
+
+\newpage
+
+\begin{landscape}
+
+\begin{figure}
+\caption{The types of Wikipedias that \emph{all} users visited from the Portal on their second visit.}
+\includegraphics{figures/wikipedia_visits_all_2.png}
+\label{fig:visits_all_2}
+\end{figure}
+
+\begin{table}
+\sffamily
+\caption{Statistical comparisons of test group vs controls with respect to language of the Wikipedia they visited through a primary or secondary link on their second visit, not excluding any users. Values in parentheses represent 95\% Bayesian Confidence Intervals -- meaning there is a 95\% probability the value of interest is inside the interval. ("Prim" = primary link, "Sec" = secondary link)}
+\centering
+\renewcommand{\arraystretch}{1.5}% for the vertical padding
+\begin{tabular}[t]{l|l|l|l|l|l|l|l|l|l}
+\hline
+\textbf{Link} & \textbf{Includes English} & \textbf{Wikipedia language} & $n_\text{B}$ & $n_\text{A}$ & $\pi_\text{B}$ \textbf{(\%)} & $\pi_\text{A}$ \textbf{(\%)} & \textbf{\% Diff (B vs A)} & \textbf{Relative Risk} & \textbf{Odds Ratio}\\
+\hline\hline
+Prim & A-L doesn't include En & one of preferred & 76 & 63 & 48.7 (37.6, 59.7) & 47.7 (36.4, 60.2) & 1.0 (-15.2, 17.6) & 1.04 (0.70, 1.41) & 1.10 (0.45, 1.86)\\
+\hline
+Prim & A-L doesn't include En & most preferred & 76 & 63 & 48.7 (37.6, 59.7) & 47.7 (36.4, 60.2) & 1.0 (-15.2, 17.6) & 1.04 (0.70, 1.41) & 1.10 (0.45, 1.86)\\
+\hline
+Prim & A-L includes En & one of preferred & 209 & 169 & 89.1 (84.9, 93.2) & 83.0 (77.6, 88.6) & 6.1 (-1.3, 12.6) & 1.07 (0.98, 1.16) & 1.76 (0.81, 2.83)\\
+\hline
+Prim & A-L includes En & most preferred & 209 & 169 & 66.8 (60.2, 73.0) & 66.6 (59.5, 73.4) & 0.2 (-9.2, 9.5) & 1.01 (0.86, 1.15) & 1.03 (0.61, 1.47)\\
+\hline
+Sec & A-L doesn't include En & one of preferred & 12 & 17 & 7.1 (0.0, 20.4) & 10.6 (0.4, 23.7) & -3.5 (-22.3, 16.9) & 1.26 (0.00, 4.37) & 1.38 (0.00, 5.06)\\
+\hline
+Sec & A-L doesn't include En & most preferred & 12 & 17 & 7.1 (0.0, 20.4) & 10.6 (0.4, 23.7) & -3.5 (-22.3, 16.9) & 1.26 (0.00, 4.37) & 1.38 (0.00, 5.06)\\
+\hline
+Sec & A-L includes En & one of preferred & 16 & 14 & 16.7 (2.2, 33.3) & 37.6 (15.6, 60.2) & -20.9 (-48.9, 7.9) & 0.50 (0.04, 1.14) & 0.43 (0.01, 1.18)\\
+\hline
+Sec & A-L includes En & most preferred & 16 & 14 & 16.7 (2.2, 33.3) & 25.0 (6.4, 45.5) & -8.3 (-34.7, 18.0) & 0.83 (0.04, 2.09) & 0.86 (0.02, 2.51)\\
+\hline
+\end{tabular}
+\label{table:visits_all_2}
+\end{table}
+
+\end{landscape}
+
+\newpage
+
+\begin{landscape}
+
+\begin{figure}
+\caption{The types of Wikipedias that \emph{non-\textbf{primarily}-English-speaking} users visited from the Portal on their second visit.}
+\includegraphics{figures/wikipedia_visits_non-prime-En_2.png}
+\label{fig:visits_non-prime-en_2}
+\end{figure}
+
+\begin{table}
+\sffamily
+\caption{Statistical comparisons of test group vs controls with respect to language of the Wikipedia they visited through a primary or secondary link on their second visit, excluding users whose most preferred language is English. Values in parentheses represent 95\% Bayesian Confidence Intervals -- meaning there is a 95\% probability the value of interest is inside the interval. ("Prim" = primary link, "Sec" = secondary link)}
+\centering
+\renewcommand{\arraystretch}{1.5}% for the vertical padding
+\begin{tabular}[t]{l|l|l|l|l|l|l|l|l|l}
+\hline
+\textbf{Link} & \textbf{Includes English} & \textbf{Wikipedia language} & $n_\text{B}$ & $n_\text{A}$ & $\pi_\text{B}$ \textbf{(\%)} & $\pi_\text{A}$ \textbf{(\%)} & \textbf{\% Diff (B vs A)} & \textbf{Relative Risk} & \textbf{Odds Ratio}\\
+\hline\hline
+Prim & A-L doesn't include En & one of preferred & 76 & 63 & 48.7 (37.6, 59.7) & 47.7 (36.4, 60.2) & 1.0 (-15.2, 17.6) & 1.04 (0.70, 1.41) & 1.10 (0.45, 1.86)\\
+\hline
+Prim & A-L doesn't include En & most preferred & 76 & 63 & 48.7 (37.6, 59.7) & 47.7 (36.4, 60.2) & 1.0 (-15.2, 17.6) & 1.04 (0.70, 1.41) & 1.10 (0.45, 1.86)\\
+\hline
+Prim & A-L includes En & one of preferred & 83 & 45 & 92.9 (87.5, 97.9) & 93.6 (86.8, 99.3) & -0.6 (-9.4, 8.3) & 0.99 (0.90, 1.10) & 1.11 (0.05, 2.91)\\
+\hline
+Prim & A-L includes En & most preferred & 83 & 45 & 42.4 (32.1, 53.0) & 36.2 (23.4, 50.3) & 6.1 (-10.9, 23.5) & 1.22 (0.69, 1.80) & 1.41 (0.52, 2.52)\\
+\hline
+Sec & A-L doesn't include En & one of preferred & 12 & 17 & 7.1 (0.0, 20.4) & 10.6 (0.4, 23.7) & -3.5 (-22.3, 16.9) & 1.26 (0.00, 4.37) & 1.38 (0.00, 5.06)\\
+\hline
+Sec & A-L doesn't include En & most preferred & 12 & 17 & 7.1 (0.0, 20.4) & 10.6 (0.4, 23.7) & -3.5 (-22.3, 16.9) & 1.26 (0.00, 4.37) & 1.38 (0.00, 5.06)\\
+\hline
+\end{tabular}
+\label{table:visits_non-prime-en_2}
+\end{table}
+
+\end{landscape}
+
+\newpage
+
+\begin{landscape}
+
+\begin{figure}
+\caption{The types of Wikipedias that \emph{not-\textbf{just}-English-speaking} users visited from the Portal on their second visit.}
+\includegraphics{figures/wikipedia_visits_non-En_2.png}
+\label{fig:visits_non-en_2}
+\end{figure}
+
+\begin{table}
+\sffamily
+\caption{Statistical comparisons of test group vs controls with respect to language of the Wikipedia they visited through a primary or secondary link on their second visit, excluding users whose only preferred language is English. Values in parentheses represent 95\% Bayesian Confidence Intervals -- meaning there is a 95\% probability the value of interest is inside the interval. ("Prim" = primary link, "Sec" = secondary link)}
+\centering
+\renewcommand{\arraystretch}{1.5}% for the vertical padding
+\begin{tabular}[t]{l|l|l|l|l|l|l|l|l|l}
+\hline
+\textbf{Link} & \textbf{Includes English} & \textbf{Wikipedia language} & $n_\text{B}$ & $n_\text{A}$ & $\pi_\text{B}$ \textbf{(\%)} & $\pi_\text{A}$ \textbf{(\%)} & \textbf{\% Diff (B vs A)} & \textbf{Relative Risk} & \textbf{Odds Ratio}\\
+\hline\hline
+Prim & A-L doesn't include En & one of preferred & 76 & 63 & 48.7 (37.6, 59.7) & 47.7 (36.4, 60.2) & 1.0 (-15.2, 17.6) & 1.04 (0.70, 1.41) & 1.10 (0.45, 1.86)\\
+\hline
+Prim & A-L doesn't include En & most preferred & 76 & 63 & 48.7 (37.6, 59.7) & 47.7 (36.4, 60.2) & 1.0 (-15.2, 17.6) & 1.04 (0.70, 1.41) & 1.10 (0.45, 1.86)\\
+\hline
+Prim & A-L includes En & one of preferred & 94 & 51 & 92.7 (87.6, 97.6) & 94.3 (88.3, 99.3) & -1.6 (-9.3, 7.1) & 0.98 (0.90, 1.07) & 0.91 (0.06, 2.31)\\
+\hline
+Prim & A-L includes En & most preferred & 94 & 51 & 43.8 (34.0, 53.7) & 41.6 (28.8, 54.7) & 2.2 (-13.9, 18.5) & 1.08 (0.70, 1.54) & 1.17 (0.49, 2.00)\\
+\hline
+Sec & A-L doesn't include En & one of preferred & 12 & 17 & 7.1 (0.0, 20.4) & 10.6 (0.4, 23.7) & -3.5 (-22.3, 16.9) & 1.26 (0.00, 4.37) & 1.38 (0.00, 5.06)\\
+\hline
+Sec & A-L doesn't include En & most preferred & 12 & 17 & 7.1 (0.0, 20.4) & 10.6 (0.4, 23.7) & -3.5 (-22.3, 16.9) & 1.26 (0.00, 4.37) & 1.38 (0.00, 5.06)\\
+\hline
+\end{tabular}
+\label{table:visits_non-en_2}
+\end{table}
+
+\end{landscape}
+
+\newpage
+
+\begin{landscape}
+
+\begin{figure}
+\caption{The types of Wikipedias that \emph{multilingual} users visited from the Portal on their second visit.}
+\includegraphics{figures/wikipedia_visits_multilang_2.png}
+\label{fig:visits_multilang_2}
+\end{figure}
+
+\begin{table}
+\sffamily
+\caption{Statistical comparisons of test group vs controls with respect to language of the Wikipedia they visited through a primary or secondary link on their second visit, looking at multilingual users only. Values in parentheses represent 95\% Bayesian Confidence Intervals -- meaning there is a 95\% probability the value of interest is inside the interval. ("Prim" = primary link, "Sec" = secondary link)}
+\centering
+\renewcommand{\arraystretch}{1.5}% for the vertical padding
+\begin{tabular}[t]{l|l|l|l|l|l|l|l|l|l}
+\hline
+\textbf{Link} & \textbf{Includes English} & \textbf{Wikipedia language} & $n_\text{B}$ & $n_\text{A}$ & $\pi_\text{B}$ \textbf{(\%)} & $\pi_\text{A}$ \textbf{(\%)} & \textbf{\% Diff (B vs A)} & \textbf{Relative Risk} & \textbf{Odds Ratio}\\
+\hline\hline
+Prim & A-L includes En & one of preferred & 94 & 51 & 92.7 (87.6, 97.6) & 94.3 (88.3, 99.3) & -1.6 (-9.3, 7.1) & 0.98 (0.90, 1.07) & 0.91 (0.06, 2.31)\\
+\hline
+Prim & A-L includes En & most preferred & 94 & 51 & 43.8 (34.0, 53.7) & 41.6 (28.8, 54.7) & 2.2 (-13.9, 18.5) & 1.08 (0.70, 1.54) & 1.17 (0.49, 2.00)\\
+\hline
+Prim & Combined (Not split by Eng. & one of preferred & 94 & 51 & 92.7 (87.6, 97.6) & 94.3 (88.3, 99.3) & -1.6 (-9.3, 7.1) & 0.98 (0.90, 1.07) & 0.91 (0.06, 2.31)\\
+\hline
+Prim & Combined (Not split by Eng. & most preferred & 94 & 51 & 43.8 (34.0, 53.7) & 41.6 (28.8, 54.7) & 2.2 (-13.9, 18.5) & 1.08 (0.70, 1.54) & 1.17 (0.49, 2.00)\\
+\hline
+\end{tabular}
+\label{table:visits_multilang_2}
 \end{table}
 
 \end{landscape}
